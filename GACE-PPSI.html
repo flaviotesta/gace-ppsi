@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GACE-PPSI · Avaliação de Capacidades e Efetividade do PPSI nas IFES</title>
+<meta name="description" content="Aplicativo local de diagnóstico de capacidades institucionais e efetividade percebida do PPSI. Os dados permanecem no seu computador.">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 72"><path d="M32 3 58 13v25c0 16-11 26-26 31C17 64 6 54 6 38V13Z" fill="%231351B4"/><rect x="17" y="22" width="30" height="7" rx="3.5" fill="%23fff"/><rect x="21" y="34" width="22" height="7" rx="3.5" fill="%23fff" opacity=".85"/><rect x="25" y="46" width="14" height="7" rx="3.5" fill="%23FFCD07"/></svg>'>
+<style>
+  :root{
+    --azul:#1351B4; --azul-esc:#0C326F; --azul-vivo:#2670E8; --azul-tint:#E8F0FB; --azul-borda:#C6D3E8;
+    --amarelo:#FFCD07;
+    --verde:#168821; --verde-tint:#E3F2E7;
+    --ambar:#C05600; --ambar-tint:#FDEFD9;
+    --verm:#D3200D;  --verm-tint:#FCE8E4;
+    --ink:#1B1B1B; --ink2:#555; --linha:#DFE5EF; --fundo:#F2F5FA; --card:#fff;
+    --sombra:0 1px 3px rgba(12,50,111,.10), 0 4px 14px rgba(12,50,111,.06);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:"Rawline","Raleway",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Open Sans","Helvetica Neue",Arial,sans-serif;
+       background:var(--fundo); color:var(--ink); font-size:16.5px; line-height:1.55;}
+  .app{max-width:1080px; margin:0 auto; padding:0 22px 64px;}
+  @media (max-width:700px){ .app{padding:0 14px 48px;} body{font-size:15.5px;} }
+
+  /* ===== Barra superior ===== */
+  .topbar{position:sticky; top:0; z-index:50; background:#fff; border-bottom:1px solid var(--linha); box-shadow:0 1px 6px rgba(12,50,111,.06);}
+  .topbar::before{content:""; display:block; height:4px; background:linear-gradient(90deg,var(--azul-esc),var(--azul) 45%,var(--azul-vivo) 78%,var(--amarelo));}
+  .topbar .interna{max-width:1080px; margin:0 auto; padding:10px 22px; display:flex; align-items:center; justify-content:space-between; gap:14px;}
+  .marca{display:flex; align-items:center; gap:12px; text-decoration:none;}
+  .marca svg{display:block;}
+  .marca .nome{line-height:1.14;}
+  .marca .nome b{display:block; font-size:1.22rem; letter-spacing:.02em; color:var(--azul-esc); font-weight:800;}
+  .marca .nome span{font-size:.68rem; letter-spacing:.06em; color:var(--ink2); text-transform:uppercase;}
+  .topbar .instit{font-size:.7rem; text-align:right; color:var(--ink2); line-height:1.35; letter-spacing:.02em;}
+  .topbar .instit b{color:var(--azul-esc);}
+  @media (max-width:700px){ .topbar .instit{display:none;} }
+
+  /* ===== Stepper ===== */
+  nav.passos{display:flex; max-width:1080px; margin:22px auto 26px; padding:0 22px; position:relative;}
+  nav.passos::before{content:""; position:absolute; top:17px; left:calc(8.5% + 22px); right:calc(8.5% + 22px); height:2px; background:var(--azul-borda); z-index:0;}
+  nav.passos button{flex:1; background:none; border:none; cursor:pointer; font:inherit; display:flex; flex-direction:column; align-items:center; gap:7px; z-index:1; padding:0;}
+  nav.passos .bola{width:34px; height:34px; border-radius:50%; border:2px solid var(--azul-borda); background:#fff;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.86rem; color:var(--azul-esc); transition:all .18s;}
+  nav.passos .rot{font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink2); font-weight:700;}
+  nav.passos button.feito .bola{background:var(--azul-tint); border-color:var(--azul-vivo); color:var(--azul);}
+  nav.passos button.ativo .bola{background:var(--azul); border-color:var(--azul); color:#fff; box-shadow:0 0 0 5px var(--azul-tint);}
+  nav.passos button.ativo .rot{color:var(--azul-esc);}
+  nav.passos button:hover .bola{border-color:var(--azul);}
+  @media (max-width:760px){ nav.passos .rot{display:none;} nav.passos{margin:16px auto 18px;} }
+
+  /* ===== Telas ===== */
+  section.tela{display:none; animation:surge .28s ease;}
+  section.tela.ativa{display:block;}
+  @keyframes surge{from{opacity:0; transform:translateY(7px);} to{opacity:1; transform:none;}}
+
+  .cartao{background:var(--card); border:1px solid var(--linha); border-radius:14px; box-shadow:var(--sombra); padding:26px 30px; margin-bottom:18px;}
+  @media (max-width:700px){ .cartao{padding:18px 16px; border-radius:12px;} }
+  h2.titulo{font-size:1.42rem; font-weight:800; color:var(--azul-esc); display:flex; align-items:center; gap:11px; margin-bottom:6px;}
+  h2.titulo .ic{width:38px; height:38px; border-radius:10px; background:var(--azul-tint); color:var(--azul); display:flex; align-items:center; justify-content:center; flex:none;}
+  .subtit{color:var(--ink2); font-size:.95rem; margin-bottom:18px;}
+  h3.secao{font-size:.8rem; letter-spacing:.14em; text-transform:uppercase; color:var(--azul); font-weight:800; margin:24px 0 10px;}
+  p{margin-bottom:10px;}
+
+  /* ===== Hero (tela inicial) ===== */
+  .hero{background:linear-gradient(132deg,var(--azul-esc) 0%,var(--azul) 55%,var(--azul-vivo) 100%);
+    border-radius:18px; color:#fff; padding:40px 44px 36px; margin-bottom:18px; position:relative; overflow:hidden;
+    display:grid; grid-template-columns:1.12fr .88fr; gap:26px; align-items:center; box-shadow:var(--sombra);}
+  .hero::after{content:""; position:absolute; width:420px; height:420px; border-radius:50%; right:-130px; top:-190px; background:rgba(255,255,255,.06);}
+  .hero::before{content:""; position:absolute; width:260px; height:260px; border-radius:50%; left:-90px; bottom:-150px; background:rgba(255,255,255,.05);}
+  .hero .kicker{font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; color:#CFE0FF; font-weight:700; margin-bottom:12px;}
+  .hero h2{font-size:2.05rem; line-height:1.22; font-weight:800; margin-bottom:12px;}
+  .hero .grifo{box-shadow:inset 0 -0.42em 0 rgba(255,205,7,.5);}
+  .hero .lead{font-size:1rem; color:#E4EDFF; margin-bottom:18px; max-width:52ch;}
+  .selo-local{display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,.13); border:1px solid rgba(255,255,255,.35);
+    border-radius:100px; padding:7px 16px; font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; font-weight:700; margin-bottom:22px;}
+  .selo-local .pontoverde{width:9px; height:9px; border-radius:50%; background:#5DDB7E; box-shadow:0 0 0 3px rgba(93,219,126,.28); flex:none;}
+  .hero .ilustra{position:relative; z-index:1; display:flex; justify-content:center;}
+  .hero .ilustra svg{width:100%; max-width:400px; height:auto; display:block;}
+  @media (max-width:860px){ .hero{grid-template-columns:1fr; padding:30px 24px;} .hero .ilustra{display:none;} .hero h2{font-size:1.6rem;} }
+
+  .bt{font:inherit; font-size:.88rem; font-weight:700; letter-spacing:.02em; cursor:pointer; border-radius:100px;
+    padding:12px 26px; border:2px solid var(--azul); color:var(--azul); background:#fff; transition:all .15s; display:inline-flex; align-items:center; gap:8px;}
+  .bt:hover{background:var(--azul-tint);}
+  .bt.principal{background:var(--azul); color:#fff;}
+  .bt.principal:hover{background:var(--azul-esc); border-color:var(--azul-esc);}
+  .bt.fantasma{background:transparent; border-color:rgba(255,255,255,.7); color:#fff;}
+  .bt.fantasma:hover{background:rgba(255,255,255,.14);}
+  .bt.sol{background:var(--amarelo); border-color:var(--amarelo); color:var(--azul-esc);}
+  .bt.sol:hover{background:#ffd83d; border-color:#ffd83d;}
+  .acoes{margin-top:26px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;}
+
+  /* Cartões de destaque da capa */
+  .tricard{display:grid; grid-template-columns:repeat(auto-fit,minmax(235px,1fr)); gap:14px; margin-bottom:18px;}
+  .fcard{background:var(--card); border:1px solid var(--linha); border-top:4px solid var(--azul-vivo); border-radius:12px; padding:18px 20px; box-shadow:var(--sombra);}
+  .fcard .fic{width:40px; height:40px; border-radius:10px; background:var(--azul-tint); color:var(--azul); display:flex; align-items:center; justify-content:center; margin-bottom:10px;}
+  .fcard b{display:block; font-size:.95rem; color:var(--azul-esc); margin-bottom:5px;}
+  .fcard p{font-size:.86rem; color:var(--ink2); margin:0;}
+
+  .comofunciona{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:6px 0 2px;}
+  .passomini{display:flex; gap:11px; align-items:flex-start;}
+  .passomini .n{width:30px; height:30px; flex:none; border-radius:50%; background:var(--azul); color:#fff; font-weight:800; font-size:.85rem; display:flex; align-items:center; justify-content:center;}
+  .passomini b{display:block; font-size:.87rem; color:var(--azul-esc);}
+  .passomini span{font-size:.8rem; color:var(--ink2);}
+
+  .callout{background:var(--azul-tint); border-left:4px solid var(--azul); padding:14px 18px; border-radius:0 10px 10px 0; font-size:.9rem; margin:16px 0 4px;}
+  .callout b{color:var(--azul-esc);}
+
+  .aviso-at{display:none; border-radius:12px; padding:14px 18px; margin-bottom:14px; font-size:.9rem; border:1.5px solid var(--azul-borda); background:var(--azul-tint);}
+  .aviso-at.nova{background:#FFF6D9; border-color:#E3BC00;}
+  .aviso-at.ok{background:var(--verde-tint); border-color:var(--verde);}
+  .aviso-at a{color:var(--azul); font-weight:700;}
+  .linkbt{background:none; border:none; color:var(--azul); cursor:pointer; font:inherit; font-size:.85rem; text-decoration:underline; padding:0;}
+
+  /* ===== Cabeçalho de seção com ilustração lateral ===== */
+  .cab-ilustrado{display:grid; grid-template-columns:1fr 200px; gap:18px; align-items:center;}
+  .cab-ilustrado .lado svg{width:100%; height:auto; display:block;}
+  @media (max-width:700px){ .cab-ilustrado{grid-template-columns:1fr;} .cab-ilustrado .lado{display:none;} }
+
+  /* ===== Campos ===== */
+  .grelha{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px 22px; margin:10px 0 4px;}
+  .campo label{display:block; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink2); font-weight:800; margin-bottom:5px;}
+  .campo input, .campo select{width:100%; padding:10px 12px; border:1.5px solid var(--azul-borda); border-radius:9px;
+    background:#fff; font:inherit; font-size:.94rem; color:var(--ink);}
+  .campo input:focus, .campo select:focus{outline:none; border-color:var(--azul); box-shadow:0 0 0 3px var(--azul-tint);}
+
+  /* ===== Itens Likert ===== */
+  .item{background:var(--card); border:1px solid var(--linha); border-radius:12px; box-shadow:var(--sombra); padding:20px 22px; margin-bottom:13px;}
+  .item .rotulo{display:inline-block; background:var(--azul-tint); color:var(--azul-esc); font-size:.68rem; font-weight:800;
+    letter-spacing:.1em; text-transform:uppercase; border-radius:100px; padding:4px 13px; margin-bottom:10px;}
+  .item .texto{margin:0 0 15px; font-size:.97rem;}
+  .regua{max-width:560px;}
+  .regua .caixas{display:flex; justify-content:space-between; gap:6px;}
+  .regua button{width:44px; height:44px; border-radius:50%; border:2px solid var(--azul-borda); background:#fff;
+    font:inherit; font-size:.95rem; font-weight:700; cursor:pointer; color:var(--azul-esc); transition:all .13s; flex:none;}
+  .regua button:hover{border-color:var(--azul); background:var(--azul-tint);}
+  .regua button.sel{background:var(--azul); border-color:var(--azul); color:#fff; box-shadow:0 0 0 4px var(--azul-tint); transform:scale(1.06);}
+  .regua .linha{display:flex; justify-content:space-between; margin-top:7px; font-size:.66rem; letter-spacing:.05em; text-transform:uppercase; color:var(--ink2); font-weight:700;}
+  @media (max-width:560px){ .regua button{width:38px; height:38px;} }
+
+  .contador{display:inline-flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--linha); border-radius:100px;
+    padding:6px 16px; font-size:.8rem; font-weight:700; color:var(--ink2); margin-bottom:14px;}
+  .contador b{color:var(--azul);}
+  .alerta{display:none; align-items:center; gap:8px; background:var(--verm-tint); color:var(--verm); border:1px solid #F2B8AE;
+    border-radius:10px; padding:11px 16px; font-size:.88rem; font-weight:600; margin-top:14px;}
+
+  /* ===== Resultados ===== */
+  .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-bottom:4px;}
+  .kpi{background:var(--card); border:1px solid var(--linha); border-radius:14px; box-shadow:var(--sombra); padding:20px 22px; border-top:5px solid var(--azul);}
+  .kpi .klabel{font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink2); font-weight:800; margin-bottom:8px;}
+  .kpi .kval{font-size:2.5rem; font-weight:800; color:var(--azul-esc); line-height:1;}
+  .kpi .kval small{font-size:1rem; color:var(--ink2); font-weight:600;}
+  .kpi .kdelta{font-size:.82rem; margin-top:8px; color:var(--ink2);}
+  .kpi .kdelta b.up{color:var(--verde);} .kpi .kdelta b.down{color:var(--verm);}
+  .kpi.perfil{border-top-color:var(--amarelo);}
+  .kpi.perfil .kperfil{font-size:1.06rem; font-weight:800; color:var(--azul-esc); line-height:1.3; margin:2px 0 6px;}
+  .kpi.perfil p{font-size:.83rem; color:var(--ink2); margin:0;}
+
+  .chip-st{display:inline-block; border-radius:100px; padding:3px 12px; font-size:.72rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase;}
+  .st-cons{background:var(--verde-tint); color:var(--verde);}
+  .st-int{background:var(--ambar-tint); color:var(--ambar);}
+  .st-frag{background:var(--verm-tint); color:var(--verm);}
+
+  .radarbox{display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .radarbox svg{width:100%; max-width:470px; height:auto;}
+  .legenda{display:flex; gap:20px; flex-wrap:wrap; justify-content:center; font-size:.78rem; color:var(--ink2); margin-top:2px;}
+  .legenda span{display:inline-flex; align-items:center; gap:7px;}
+  .legenda .am{width:22px; height:4px; border-radius:2px; background:var(--azul);}
+  .legenda .bm{width:22px; height:0; border-top:2.5px dashed #98A4B8;}
+
+  .linha-escore{padding:12px 0 14px; border-top:1px solid var(--linha);}
+  .linha-escore:last-child{border-bottom:1px solid var(--linha);}
+  .linha-escore .topo{display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:7px;}
+  .linha-escore .nome{font-size:.93rem; font-weight:600;}
+  .linha-escore .nome .cod{display:inline-block; background:var(--azul-tint); color:var(--azul-esc); font-size:.64rem; font-weight:800;
+    letter-spacing:.08em; border-radius:6px; padding:2px 7px; margin-right:8px; vertical-align:1px;}
+  .linha-escore .valores{white-space:nowrap; font-size:.85rem; color:var(--ink2);}
+  .linha-escore .valores b{font-size:1.06rem; color:var(--ink); margin-right:8px;}
+  .trilho{position:relative; height:12px; border-radius:7px; background:#E9EEF6; margin-top:2px;}
+  .trilho .cheio{position:absolute; left:0; top:0; bottom:0; border-radius:7px; background:linear-gradient(90deg,var(--azul-vivo),var(--azul)); min-width:8px;}
+  .trilho .cheio.forte{background:linear-gradient(90deg,#2FA353,var(--verde));}
+  .trilho .cheio.medio{background:linear-gradient(90deg,#E8A33D,var(--ambar));}
+  .trilho .cheio.fraco{background:linear-gradient(90deg,#F0654F,var(--verm));}
+  .trilho .neutro{position:absolute; top:-4px; bottom:-4px; width:2px; background:#8FA0BC; left:50%; border-radius:1px;}
+  .trilho .marca-ifes{position:absolute; top:-15px; transform:translateX(-50%); font-size:.72rem; color:#3D4A61; line-height:1;}
+
+  .camadas3{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px;}
+  .camcard{background:var(--card); border:1px solid var(--linha); border-radius:12px; box-shadow:var(--sombra); padding:18px 20px;}
+  .camcard .rom{font-size:1.5rem; font-weight:800; color:var(--azul-vivo); line-height:1;}
+  .camcard b.cnome{display:block; font-size:.88rem; color:var(--azul-esc); margin:6px 0 2px;}
+  .camcard .cdesc{font-size:.76rem; color:var(--ink2); margin-bottom:10px; min-height:2.3em;}
+  .camcard .cval{font-size:1.5rem; font-weight:800; color:var(--ink); margin-bottom:6px;}
+  .camcard .cval small{font-size:.75rem; font-weight:600; color:var(--ink2);}
+
+  .prio{background:var(--card); border:1px solid var(--linha); border-left:5px solid var(--azul); border-radius:12px;
+    box-shadow:var(--sombra); padding:18px 22px; margin-bottom:13px; display:flex; gap:16px;}
+  .prio .pn{width:38px; height:38px; flex:none; border-radius:50%; background:var(--azul); color:#fff; font-weight:800; font-size:1.05rem; display:flex; align-items:center; justify-content:center;}
+  .prio.transversal{border-left-color:var(--amarelo);}
+  .prio.transversal .pn{background:var(--amarelo); color:var(--azul-esc);}
+  .prio b.pt{display:block; color:var(--azul-esc); margin-bottom:3px;}
+  .prio .pmeta{font-size:.78rem; color:var(--ink2); margin-bottom:6px;}
+  .prio p{font-size:.9rem; margin:0;}
+  .desdobra{margin-top:11px; border-top:1px dashed var(--linha); padding-top:9px;}
+  .desdobra summary{cursor:pointer; color:var(--azul); font-weight:700; font-size:.8rem; letter-spacing:.02em;}
+  .desdobra summary:hover{color:var(--azul-esc);}
+  .desdobra .dtit{font-weight:800; color:var(--azul-esc); font-size:.68rem; text-transform:uppercase; letter-spacing:.1em; margin-top:12px;}
+  .desdobra ul{margin:5px 0 0 18px; font-size:.87rem;}
+  .desdobra ul li{margin-bottom:4px;}
+
+  .nota-leitura{font-size:.85rem; color:var(--ink2); font-style:italic;}
+  table.quadro{width:100%; border-collapse:collapse; margin:12px 0 6px; font-size:.9rem;}
+  table.quadro th{background:var(--azul-tint); color:var(--azul-esc); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+    text-align:left; padding:9px 12px; font-weight:800;}
+  table.quadro th:first-child{border-radius:8px 0 0 8px;} table.quadro th:last-child{border-radius:0 8px 8px 0;}
+  table.quadro td{border-bottom:1px solid var(--linha); padding:10px 12px; vertical-align:top;}
+
+  footer.pe{background:var(--azul-esc); color:#BCD0F2; margin-top:40px;}
+  footer.pe .interna{max-width:1080px; margin:0 auto; padding:26px 22px; display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; font-size:.78rem; line-height:1.5;}
+  footer.pe b{color:#fff;}
+  footer.pe .fmarca{display:flex; align-items:center; gap:10px;}
+  footer.pe .fmarca .fn b{display:block; font-size:.95rem;}
+  footer.pe .fmarca .fn span{font-size:.66rem; letter-spacing:.08em; text-transform:uppercase;}
+
+  /* ===== Relatório executivo (impressão) ===== */
+  #relatorio{display:none;}
+  @media print{
+    @page{margin:15mm 14mm;}
+    body{background:#fff;}
+    body > *{display:none !important;}
+    body > #relatorio{display:block !important;}
+    #relatorio, #relatorio *{print-color-adjust:exact; -webkit-print-color-adjust:exact;}
+  }
+  #relatorio{font-size:10pt; line-height:1.5; color:#1B1B1B;}
+  #relatorio .cab{display:flex; align-items:center; gap:14pt; border-bottom:3pt solid #1351B4; padding-bottom:10pt; margin-bottom:12pt;}
+  #relatorio .cab .tit .k{font-size:7pt; letter-spacing:.18em; text-transform:uppercase; color:#555; font-weight:700;}
+  #relatorio .cab h1{font-size:17pt; color:#0C326F; margin:2pt 0;}
+  #relatorio .cab .sub{font-size:8.5pt; color:#555;}
+  #relatorio .metabox{background:#F2F5FA; border:0.75pt solid #DFE5EF; border-radius:6pt; padding:8pt 12pt; font-size:8.5pt; margin-bottom:12pt;
+    display:grid; grid-template-columns:repeat(3,1fr); gap:3pt 14pt;}
+  #relatorio .metabox span b{color:#0C326F;}
+  #relatorio h2{font-size:11.5pt; color:#0C326F; border-left:4pt solid #1351B4; padding-left:8pt; margin:16pt 0 7pt; page-break-after:avoid;}
+  #relatorio h3{font-size:9pt; letter-spacing:.1em; text-transform:uppercase; color:#1351B4; margin:10pt 0 5pt;}
+  #relatorio p{text-align:justify; margin-bottom:6pt;}
+  #relatorio .kpirow{display:grid; grid-template-columns:repeat(3,1fr); gap:8pt; margin:8pt 0;}
+  #relatorio .kpibox{border:0.75pt solid #DFE5EF; border-top:3pt solid #1351B4; border-radius:6pt; padding:8pt 10pt;}
+  #relatorio .kpibox .kl{font-size:6.5pt; letter-spacing:.12em; text-transform:uppercase; color:#555; font-weight:700;}
+  #relatorio .kpibox .kv{font-size:17pt; font-weight:800; color:#0C326F;}
+  #relatorio .kpibox .kv small{font-size:8pt; color:#555; font-weight:600;}
+  #relatorio .kpibox .kd{font-size:7.5pt; color:#555;}
+  #relatorio .kpibox.amarela{border-top-color:#FFCD07;}
+  #relatorio .kpibox .kperf{font-size:10pt; font-weight:800; color:#0C326F; line-height:1.25; margin:2pt 0;}
+  #relatorio table{width:100%; border-collapse:collapse; font-size:8.5pt; margin:5pt 0; page-break-inside:avoid;}
+  #relatorio th{background:#E8F0FB; color:#0C326F; text-align:left; padding:4pt 6pt; font-size:7pt; letter-spacing:.08em; text-transform:uppercase; border-bottom:1pt solid #1351B4;}
+  #relatorio td{border-bottom:0.5pt solid #C9D4E8; padding:4pt 6pt;}
+  #relatorio .st{font-weight:700;}
+  #relatorio .st.c{color:#168821;} #relatorio .st.i{color:#C05600;} #relatorio .st.f{color:#D3200D;}
+  #relatorio .delta-pos{color:#168821; font-weight:700;} #relatorio .delta-neg{color:#D3200D; font-weight:700;}
+  #relatorio .duplo{display:grid; grid-template-columns:1fr 1fr; gap:12pt; align-items:start;}
+  #relatorio .figura{text-align:center; margin:6pt 0; page-break-inside:avoid;}
+  #relatorio .figura svg{max-width:100%; height:auto;}
+  #relatorio .figura .fleg{font-size:7.5pt; color:#555; font-style:italic; margin-top:2pt;}
+  #relatorio .recq{border:0.75pt solid #DFE5EF; border-left:3pt solid #1351B4; border-radius:0 5pt 5pt 0; padding:6pt 9pt; margin:5pt 0; page-break-inside:avoid;}
+  #relatorio .recq .rt{font-weight:800; color:#0C326F; font-size:9pt;}
+  #relatorio .recq .rm{font-size:7.5pt; color:#555; margin-bottom:2pt;}
+  #relatorio .recq p{margin:0; font-size:8.7pt;}
+  #relatorio .recq.trans{border-left-color:#FFCD07;}
+  #relatorio .recq .evid{font-style:italic; color:#333; margin:2pt 0 3pt;}
+  #relatorio .rgrid{display:grid; grid-template-columns:1.12fr .88fr; gap:4pt 12pt; margin-top:3pt;}
+  #relatorio .recq .dtit{font-size:6.6pt; letter-spacing:.12em; text-transform:uppercase; color:#1351B4; font-weight:800; margin-top:4pt;}
+  #relatorio .recq ul{margin:1pt 0 2pt 11pt; font-size:8.2pt;}
+  #relatorio .recq ul li{margin-bottom:1.5pt; text-align:justify;}
+  #relatorio .recq .rrefs{font-size:7.8pt; color:#333; margin-top:2pt; text-align:justify;}
+  #relatorio .recq .rrefs b{color:#0C326F;}
+  #relatorio ul.lista{margin:4pt 0 6pt 14pt; font-size:8.7pt;}
+  #relatorio ul.lista li{margin-bottom:3pt; text-align:justify;}
+  #relatorio .assinatura{margin-top:34pt; text-align:center; font-size:8.5pt; page-break-inside:avoid;}
+  #relatorio .assinatura .linha-ass{display:inline-block; border-top:0.75pt solid #000; padding-top:3pt; min-width:280pt;}
+  #relatorio .rodape-rel{margin-top:14pt; border-top:0.75pt solid #C9D4E8; padding-top:5pt; font-size:7pt; color:#555; display:flex; justify-content:space-between;}
+</style>
+</head>
+<body>
+
+<!-- ===== Barra superior com a marca ===== -->
+<header class="topbar">
+  <div class="interna">
+    <a class="marca" href="#" onclick="irPara(0);return false;" aria-label="GACE-PPSI — início">
+      <svg width="40" height="45" viewBox="0 0 64 72" aria-hidden="true">
+        <defs><linearGradient id="gmarca" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#2670E8"/><stop offset="1" stop-color="#0C326F"/></linearGradient></defs>
+        <path d="M32 3 58 13v25c0 16-11 26-26 31C17 64 6 54 6 38V13Z" fill="url(#gmarca)"/>
+        <rect x="17" y="21" width="30" height="7.5" rx="3.75" fill="#fff"/>
+        <rect x="21" y="33.5" width="22" height="7.5" rx="3.75" fill="#fff" opacity=".85"/>
+        <rect x="25" y="46" width="14" height="7.5" rx="3.75" fill="#FFCD07"/>
+      </svg>
+      <span class="nome"><b>GACE-PPSI</b><span>Capacidades · Efetividade · PPSI</span></span>
+    </a>
+    <div class="instit"><b>Universidade Federal da Fronteira Sul</b><br>Mestrado Profissional em Administração Pública — PROFIAP</div>
+  </div>
+</header>
+
+<nav class="passos" id="nav" aria-label="Etapas"></nav>
+
+<div class="app">
+
+  <!-- ============ TELA 1 · APRESENTAÇÃO ============ -->
+  <section class="tela" data-tela="0">
+    <div class="aviso-at" id="avisoAtualizacao" role="status"></div>
+    <div class="hero">
+      <div>
+        <div class="kicker">Produto técnico-tecnológico · versão 1.1 · 2026</div>
+        <h2>Avalie as <span class="grifo">capacidades</span> e a <span class="grifo">efetividade</span> do PPSI na sua instituição</h2>
+        <p class="lead">Diagnóstico estruturado em 18 itens, comparado ao padrão nacional de 58 IFES, com relatório executivo pronto para a alta administração.</p>
+        <span class="selo-local"><span class="pontoverde"></span>Execução 100% local — nenhum dado sai deste computador</span>
+        <div class="acoes" style="margin-top:2px">
+          <button class="bt sol" onclick="irPara(1)">Iniciar avaliação
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          <button class="bt fantasma" onclick="document.getElementById('importar').click()">Importar avaliação anterior</button>
+          <input type="file" id="importar" accept=".json" style="display:none" onchange="importarJSON(event)">
+        </div>
+      </div>
+      <div class="ilustra" aria-hidden="true">
+        <!-- Ilustração original: instituição protegida por capacidades em camadas -->
+        <svg viewBox="0 0 520 420">
+          <defs>
+            <linearGradient id="hesc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DFE9FA"/></linearGradient>
+          </defs>
+          <g opacity=".38" fill="#CFE0FF">
+            <polygon points="266,64 128,126 404,126"/>
+            <rect x="150" y="136" width="22" height="148"/><rect x="204" y="136" width="22" height="148"/>
+            <rect x="258" y="136" width="22" height="148"/><rect x="312" y="136" width="22" height="148"/><rect x="366" y="136" width="22" height="148"/>
+            <rect x="134" y="284" width="272" height="20" rx="4"/><rect x="118" y="306" width="304" height="16" rx="4"/>
+          </g>
+          <ellipse cx="256" cy="392" rx="212" ry="15" fill="rgba(0,0,0,.16)"/>
+          <g stroke="rgba(255,255,255,.55)" stroke-width="2" stroke-dasharray="2 7" fill="none">
+            <path d="M150 190 C 190 200, 200 220, 214 240"/><path d="M398 186 C 370 210, 352 224, 330 240"/>
+          </g>
+          <!-- cartão de indicadores -->
+          <g>
+            <rect x="26" y="112" width="132" height="100" rx="13" fill="#FFFFFF"/>
+            <rect x="40" y="126" width="62" height="9" rx="4.5" fill="#C9D9F5"/>
+            <rect x="40" y="176" width="17" height="22" rx="3" fill="#2670E8" opacity=".55"/>
+            <rect x="64" y="164" width="17" height="34" rx="3" fill="#2670E8" opacity=".8"/>
+            <rect x="88" y="150" width="17" height="48" rx="3" fill="#1351B4"/>
+            <rect x="112" y="158" width="17" height="40" rx="3" fill="#FFCD07"/>
+          </g>
+          <!-- cadeado -->
+          <g>
+            <circle cx="432" cy="140" r="40" fill="#FFCD07"/>
+            <path d="M420 136v-10a12 12 0 0 1 24 0v10" stroke="#0C326F" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+            <rect x="412" y="136" width="40" height="30" rx="7" fill="#0C326F"/>
+            <circle cx="432" cy="149" r="4.5" fill="#FFCD07"/>
+          </g>
+          <!-- escudo central em camadas (marca do sistema) -->
+          <g transform="translate(132,148) scale(3.44)">
+            <path d="M32 3 58 13v25c0 16-11 26-26 31C17 64 6 54 6 38V13Z" fill="url(#hesc)"/>
+            <path d="M32 3 58 13v25c0 16-11 26-26 31C17 64 6 54 6 38V13Z" fill="none" stroke="rgba(12,50,111,.25)" stroke-width="1.4"/>
+            <rect x="17" y="21" width="30" height="7.5" rx="3.75" fill="#2670E8"/>
+            <rect x="21" y="33.5" width="22" height="7.5" rx="3.75" fill="#1351B4"/>
+            <rect x="25" y="46" width="14" height="7.5" rx="3.75" fill="#FFCD07"/>
+          </g>
+          <!-- selo de verificação -->
+          <g>
+            <circle cx="336" cy="330" r="34" fill="#1FA84D"/>
+            <circle cx="336" cy="330" r="34" fill="none" stroke="#fff" stroke-width="3" opacity=".65"/>
+            <path d="M320 330l11 11 21-22" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <g fill="#fff" opacity=".55">
+            <circle cx="66" cy="66" r="4"/><circle cx="480" cy="250" r="5"/><circle cx="452" cy="62" r="3"/><circle cx="40" cy="256" r="4"/>
+            <path d="M492 118h14M499 111v14" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+            <path d="M20 150h12M26 144v12" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="tricard">
+      <div class="fcard">
+        <div class="fic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <b>Quem responde</b>
+        <p>Preferencialmente o principal responsável pelo acompanhamento do PPSI; na ausência, ator diretamente envolvido (SI, privacidade, TI ou gestão). Recomenda-se discutir o diagnóstico em comitê antes de formalizá-lo.</p>
+      </div>
+      <div class="fcard">
+        <div class="fic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <b>Periodicidade e uso</b>
+        <p>Aplicação anual, antes do ciclo de planejamento e orçamento. Insumo para conversas estruturadas entre gestão de segurança, auditoria interna e comitês — não um formulário adicional de conformidade.</p>
+      </div>
+      <div class="fcard">
+        <div class="fic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div>
+        <b>O que este instrumento não é</b>
+        <p>Não substitui auditorias técnicas, testes de postura nem métricas objetivas de incidentes; complementa-os. Leia os resultados como diagnóstico orientador, não como veredito.</p>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <h3 class="secao" style="margin-top:0">Como funciona</h3>
+      <div class="comofunciona">
+        <div class="passomini"><span class="n">1</span><span><b>Identifique a instituição</b><span>Dados de contexto, só no seu computador.</span></span></div>
+        <div class="passomini"><span class="n">2</span><span><b>Responda 18 itens</b><span>8 capacidades e 10 resultados, escala 1–7.</span></span></div>
+        <div class="passomini"><span class="n">3</span><span><b>Receba o diagnóstico</b><span>Comparado ao padrão nacional das 58 IFES.</span></span></div>
+        <div class="passomini"><span class="n">4</span><span><b>Gere o relatório executivo</b><span>Com gráficos, prioridades e plano de ação.</span></span></div>
+      </div>
+      <div class="callout"><b>Privacidade.</b> As respostas são processadas somente neste navegador. É possível salvar rascunho local, exportar a avaliação em JSON para o ciclo seguinte e apagar tudo a qualquer momento. A verificação de atualizações é manual: só ocorre quando você clica no botão, consulta apenas um arquivo público com o número da versão e não transmite nenhuma informação da sua avaliação.</div>
+      <div class="acoes" style="margin-top:16px">
+        <button class="bt" onclick="verificarAtualizacao()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>Verificar atualizações</button>
+        <button class="bt" onclick="limparTudo()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>Apagar dados salvos</button>
+        <button class="bt" onclick="irPara(5)">Método, origem e limites</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TELA 2 · IDENTIFICAÇÃO ============ -->
+  <section class="tela" data-tela="1">
+    <div class="cartao">
+      <div class="cab-ilustrado">
+        <div>
+          <h2 class="titulo"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><circle cx="8.5" cy="11" r="2.5"/><path d="M14 9h5M14 13h5M5 18c.8-2 2-3 3.5-3s2.7 1 3.5 3"/></svg></span>Identificação institucional</h2>
+          <p class="subtit">Estes dados contextualizam o relatório e <b>permanecem somente neste computador</b>.</p>
+        </div>
+        <div class="lado" aria-hidden="true">
+          <svg viewBox="0 0 200 150">
+            <rect x="18" y="28" width="164" height="100" rx="12" fill="#fff" stroke="#C6D3E8" stroke-width="2"/>
+            <path d="M18 40a12 12 0 0 1 12-12h140a12 12 0 0 1 12 12v8H18Z" fill="#1351B4"/>
+            <circle cx="52" cy="86" r="17" fill="#E8F0FB" stroke="#2670E8" stroke-width="2.5"/>
+            <circle cx="52" cy="81" r="6" fill="#2670E8"/><path d="M40 97c2-6 6-9 12-9s10 3 12 9" fill="#2670E8"/>
+            <rect x="82" y="66" width="76" height="8" rx="4" fill="#C9D9F5"/>
+            <rect x="82" y="82" width="58" height="8" rx="4" fill="#DDE7F8"/>
+            <rect x="82" y="98" width="44" height="8" rx="4" fill="#DDE7F8"/>
+            <circle cx="168" cy="118" r="15" fill="#FFCD07"/>
+            <path d="M162 118l4 4 8-8" stroke="#0C326F" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="grelha">
+        <div class="campo"><label for="inst">Instituição (nome ou sigla)</label><input type="text" id="inst"></div>
+        <div class="campo"><label for="tipo">Tipo de IFES</label>
+          <select id="tipo"><option value=""></option><option>Universidade federal</option><option>Instituto federal ou equiparado</option></select></div>
+        <div class="campo"><label for="regiao">Região da sede</label>
+          <select id="regiao"><option value=""></option><option>Norte</option><option>Nordeste</option><option>Centro-Oeste</option><option>Sudeste</option><option>Sul</option></select></div>
+        <div class="campo"><label for="multicampi">Estrutura multicampi</label>
+          <select id="multicampi"><option value=""></option><option>Sim</option><option>Não</option></select></div>
+        <div class="campo"><label for="perfil">Perfil predominante do respondente</label>
+          <select id="perfil"><option value=""></option><option>Segurança da Informação</option><option>Privacidade e proteção de dados</option><option>Tecnologia da Informação/TIC</option><option>Gestão institucional</option><option>Outro perfil diretamente envolvido com o PPSI</option></select></div>
+        <div class="campo"><label for="dataref">Data de referência</label><input type="date" id="dataref"></div>
+      </div>
+      <p style="font-size:.85rem; color:var(--ink2); margin-top:18px">Este diagnóstico não solicita índices de maturidade nem outros dados de conformidade da instituição: as respostas refletem exclusivamente a percepção qualificada do respondente sobre capacidades e resultados.</p>
+      <div class="acoes"><button class="bt" onclick="irPara(0)">Voltar</button><button class="bt principal" onclick="irPara(2)">Avançar: capacidades</button></div>
+    </div>
+  </section>
+
+  <!-- ============ TELA 3 · CAPACIDADES ============ -->
+  <section class="tela" data-tela="2">
+    <div class="cartao">
+      <div class="cab-ilustrado">
+        <div>
+          <h2 class="titulo"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 12l10 5 10-5"/><path d="M2 17l10 5 10-5"/></svg></span>Bloco I · Capacidades institucionais</h2>
+          <p class="subtit">Assinale, para cada enunciado, o ponto da escala que melhor descreve a situação atual da instituição, de <b>1 — discordo totalmente</b> a <b>7 — concordo totalmente</b>. O ponto 4 é neutro.</p>
+        </div>
+        <div class="lado" aria-hidden="true">
+          <svg viewBox="0 0 200 150">
+            <ellipse cx="96" cy="134" rx="76" ry="8" fill="#E1E9F6"/>
+            <rect x="36" y="98" width="120" height="24" rx="7" fill="#0C326F"/>
+            <rect x="48" y="66" width="96" height="24" rx="7" fill="#1351B4"/>
+            <rect x="60" y="34" width="72" height="24" rx="7" fill="#2670E8"/>
+            <circle cx="52" cy="110" r="4" fill="#FFCD07"/><circle cx="64" cy="78" r="4" fill="#fff" opacity=".8"/><circle cx="76" cy="46" r="4" fill="#fff" opacity=".8"/>
+            <path d="M172 118V38" stroke="#FFCD07" stroke-width="5" stroke-linecap="round"/>
+            <path d="M162 50l10-14 10 14" stroke="#FFCD07" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <span class="contador" id="contCap"><b>0</b>&nbsp;de 8 itens respondidos</span>
+    </div>
+    <div id="listaCap"></div>
+    <div class="alerta" id="avisoCap"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Há itens sem resposta. Responda todos antes de avançar.</div>
+    <div class="acoes"><button class="bt" onclick="irPara(1)">Voltar</button><button class="bt principal" onclick="validarBloco('cap',3)">Avançar: efetividade</button><button class="bt" onclick="salvarRascunho()">Salvar rascunho</button></div>
+  </section>
+
+  <!-- ============ TELA 4 · EFETIVIDADE ============ -->
+  <section class="tela" data-tela="3">
+    <div class="cartao">
+      <div class="cab-ilustrado">
+        <div>
+          <h2 class="titulo"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>Bloco II · Efetividade percebida</h2>
+          <p class="subtit">Avalie os resultados percebidos, de <b>1 — discordo totalmente</b> a <b>7 — concordo totalmente</b>. O ponto 4 é neutro.</p>
+        </div>
+        <div class="lado" aria-hidden="true">
+          <svg viewBox="0 0 200 150">
+            <ellipse cx="100" cy="136" rx="80" ry="8" fill="#E1E9F6"/>
+            <circle cx="66" cy="76" r="42" fill="#fff" stroke="#C6D3E8" stroke-width="2"/>
+            <circle cx="66" cy="76" r="29" fill="#E8F0FB" stroke="#2670E8" stroke-width="2"/>
+            <circle cx="66" cy="76" r="15" fill="#1351B4"/><circle cx="66" cy="76" r="6" fill="#FFCD07"/>
+            <path d="M120 22 72 70" stroke="#0C326F" stroke-width="5" stroke-linecap="round"/>
+            <path d="M112 14l16 2-2 16" stroke="#0C326F" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="128" y="106" width="14" height="22" rx="3" fill="#2670E8" opacity=".55"/>
+            <rect x="148" y="92" width="14" height="36" rx="3" fill="#2670E8" opacity=".8"/>
+            <rect x="168" y="74" width="14" height="54" rx="3" fill="#1351B4"/>
+            <path d="M128 84c14-8 28-18 46-32" stroke="#1FA84D" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M164 50l12-2v12" stroke="#1FA84D" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <span class="contador" id="contEf"><b>0</b>&nbsp;de 10 itens respondidos</span>
+    </div>
+    <div id="listaEf"></div>
+    <div class="alerta" id="avisoEf"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Há itens sem resposta. Responda todos antes de avançar.</div>
+    <div class="acoes"><button class="bt" onclick="irPara(2)">Voltar</button><button class="bt principal" onclick="validarBloco('ef',4)">Calcular diagnóstico</button><button class="bt" onclick="salvarRascunho()">Salvar rascunho</button></div>
+  </section>
+
+  <!-- ============ TELA 5 · DIAGNÓSTICO ============ -->
+  <section class="tela" data-tela="4">
+    <div class="cartao" style="border-top:5px solid var(--azul)">
+      <h2 class="titulo"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></span>Diagnóstico</h2>
+      <p class="subtit" style="margin-bottom:0">Resultados comparados ao padrão nacional das 58 IFES respondentes. Convenções: <span class="chip-st st-cons">consolidada ≥ 5</span> <span class="chip-st st-int">intermediária 4–5</span> <span class="chip-st st-frag">frágil &lt; 4</span></p>
+    </div>
+    <div class="kpis" id="resumo"></div>
+    <div class="cartao">
+      <h3 class="secao" style="margin-top:0">Panorama das capacidades — sua instituição × padrão IFES</h3>
+      <div class="radarbox"><div id="radarCap"></div>
+        <div class="legenda"><span><span class="am"></span>Sua instituição</span><span><span class="bm"></span>Padrão 58 IFES</span></div>
+      </div>
+    </div>
+    <div class="cartao">
+      <h3 class="secao" style="margin-top:0">Capacidades institucionais em detalhe</h3>
+      <div id="graficoCap"></div>
+      <p class="nota-leitura" style="margin-top:10px">O traço vertical central marca o ponto neutro (4); o marcador ▾ indica o padrão das 58 IFES.</p>
+    </div>
+    <div class="cartao">
+      <h3 class="secao" style="margin-top:0">Efetividade percebida, por domínio</h3>
+      <div id="graficoEf"></div>
+    </div>
+    <div class="cartao">
+      <h3 class="secao" style="margin-top:0">Leitura em camadas</h3>
+      <div class="camadas3" id="camadas"></div>
+      <p class="nota-leitura" style="margin-top:12px">Na pesquisa nacional, a efetividade associou-se com mais força às capacidades da Camada III — tipicamente as mais frágeis. Um perfil com Camada I alta e Camada III baixa indica institucionalização formal ainda não convertida em capacidade operante.</p>
+    </div>
+    <div class="cartao">
+      <h3 class="secao" style="margin-top:0">Prioridades indicadas pela evidência empírica</h3>
+      <p class="nota-leitura">Ordenação pela combinação entre a fragilidade do escore e a força da associação de cada capacidade com a efetividade, observada na pesquisa nacional. São associações, não relações causais.</p>
+      <div id="prioridades"></div>
+      <div id="comparacao"></div>
+    </div>
+    <div class="acoes">
+      <button class="bt principal" onclick="gerarRelatorio()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Gerar relatório executivo (PDF)</button>
+      <button class="bt" onclick="exportarJSON()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Exportar avaliação (JSON)</button>
+      <button class="bt" onclick="irPara(3)">Revisar respostas</button>
+    </div>
+  </section>
+
+  <!-- ============ TELA 6 · MÉTODO ============ -->
+  <section class="tela" data-tela="5">
+    <div class="cartao">
+      <div class="cab-ilustrado">
+        <div>
+          <h2 class="titulo"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></span>Método, origem e limites</h2>
+        </div>
+        <div class="lado" aria-hidden="true">
+          <svg viewBox="0 0 200 150">
+            <ellipse cx="100" cy="136" rx="80" ry="8" fill="#E1E9F6"/>
+            <path d="M28 116Q64 102 100 116Q136 102 172 116V46Q136 32 100 46Q64 32 28 46Z" fill="#fff" stroke="#C6D3E8" stroke-width="2"/>
+            <path d="M100 46v70" stroke="#C6D3E8" stroke-width="2"/>
+            <rect x="40" y="56" width="46" height="6" rx="3" fill="#DDE7F8"/><rect x="40" y="70" width="46" height="6" rx="3" fill="#DDE7F8"/><rect x="40" y="84" width="34" height="6" rx="3" fill="#DDE7F8"/>
+            <rect x="114" y="56" width="46" height="6" rx="3" fill="#DDE7F8"/><rect x="114" y="70" width="34" height="6" rx="3" fill="#DDE7F8"/>
+            <circle cx="138" cy="88" r="22" fill="rgba(38,112,232,.12)" stroke="#1351B4" stroke-width="5"/>
+            <path d="M154 104l16 16" stroke="#1351B4" stroke-width="7" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <p><b>Origem.</b> O instrumento deriva de revisão sistemática de 82 estudos internacionais sobre segurança da informação e privacidade no setor público, que fundamentou uma matriz de domínios de capacidade e de efetividade. Os itens foram submetidos a validação de conteúdo por painel de especialistas (Content Validity Ratio de Lawshe, com rodada complementar de refinamento) e aplicados nacionalmente a 58 IFES — 52,7% do universo de 110 instituições —, cujas médias formam o padrão de referência exibido pelo aplicativo.</p>
+      <p><b>Escores.</b> Cada capacidade (C1 a C8) e cada item de efetividade (E1 a E10) usa escala de 7 pontos, com 4 como ponto neutro. Os domínios de efetividade agregam itens por média: continuidade (E1, E2), detecção e resposta (E3, E4), mitigação de risco (E5), proteção de dados (E6), transparência e conformidade (E7, E8), confiança e percepção (E9, E10). Os escores totais são médias simples dos itens de cada bloco.</p>
+      <p><b>Leitura em camadas.</b> Camada I, institucionalização formal: governança (C1). Camada II, operação sociotécnica: pessoas (C2), processos (C3), tecnologia (C4) e treinamento (C7). Camada III, sustentação material e integração decisória: gestão de dados (C5), riscos integrados ao planejamento (C6) e recursos (C8). Na pesquisa nacional, a efetividade percebida associou-se com mais força à camada III — justamente a mais frágil nas IFES.</p>
+      <p><b>Priorização.</b> Para cada capacidade, prioridade = (7 − escore) × associação empírica com a efetividade total observada na pesquisa (correlações de Spearman): gestão de riscos 0,612; tecnologia 0,586; recursos 0,553; processos 0,479; pessoas 0,432; treinamento 0,339; gestão de dados 0,298; governança 0,292. As três maiores recebem recomendações vinculadas às linhas de ação da dissertação, desdobradas em linhas de ação, indicadores de acompanhamento, referenciais públicos de apoio (framework PPSI/SGD, PNSI — Decreto nº 12.572/2025 —, LGPD e orientações da ANPD, IN Conjunta MP/CGU nº 1/2016, CIS Controls/NIST CSF, normas ISO) e atores a envolver — um cardápio a calibrar pelo comitê, não uma prescrição. Se o domínio de confiança e percepção ficar abaixo do neutro, a comunicação executiva de resultados é sempre sugerida.</p>
+      <p><b>Limites.</b> Instrumento perceptual, de respondente único qualificado; evidência associativa e transversal; padrão de referência datado da aplicação nacional (2026) e sujeito a recalibração. Complementa — não substitui — auditorias técnicas e métricas objetivas.</p>
+      <p><b>Distribuição e atualizações.</b> O aplicativo é distribuído exclusivamente por download, como arquivo único, e não possui versão hospedada: todo o processamento ocorre no computador de quem o utiliza. A verificação de novas versões é manual (botão na tela inicial), consulta apenas um arquivo público com o número da versão e não transmite nenhum dado da avaliação; a atualização é sempre uma escolha do usuário, e a integridade de cada versão pode ser conferida pelo hash publicado na página de distribuição.</p>
+<p><b>Licença e citação.</b> Uso e adaptação livres, com atribuição — licença Creative Commons CC BY 4.0. Citar: TESTA, F. H. GACE-PPSI: Guia de Avaliação de Capacidades e Efetividade do PPSI nas IFES, versão 1.1. Produto técnico-tecnológico (Mestrado Profissional em Administração Pública) — Universidade Federal da Fronteira Sul, Chapecó, 2026. A identidade visual e as ilustrações são originais do produto, cobertas pela mesma licença.</p>
+      <div class="acoes"><button class="bt" onclick="irPara(0)">Voltar ao início</button></div>
+    </div>
+  </section>
+</div>
+
+<footer class="pe">
+  <div class="interna">
+    <div class="fmarca">
+      <svg width="30" height="34" viewBox="0 0 64 72" aria-hidden="true">
+        <path d="M32 3 58 13v25c0 16-11 26-26 31C17 64 6 54 6 38V13Z" fill="#fff" opacity=".92"/>
+        <rect x="17" y="21" width="30" height="7.5" rx="3.75" fill="#0C326F"/>
+        <rect x="21" y="33.5" width="22" height="7.5" rx="3.75" fill="#1351B4"/>
+        <rect x="25" y="46" width="14" height="7.5" rx="3.75" fill="#FFCD07"/>
+      </svg>
+      <div class="fn"><b>GACE-PPSI · v1.1</b><span>Produto técnico-tecnológico</span></div>
+    </div>
+    <div>Flavio Humberto Testa · Orientação: Prof.ª Dr.ª Débora Regina Schneider Locatelli<br><b>UFFS · PROFIAP · 2026</b> — uso e adaptação livres, com atribuição · CC BY 4.0</div>
+  </div>
+</footer>
+
+<div id="relatorio"></div>
+
+<script>
+"use strict";
+/* ===== Dados do instrumento (versão final validada) ===== */
+const CAP = [
+ {c:"C1", nome:"Governança", curto:"Governança", texto:"Papéis, responsabilidades e instâncias de governança do PPSI estão formalizados e em funcionamento.", bench:4.72, rho:0.292, camada:1},
+ {c:"C2", nome:"Pessoas e competências", curto:"Pessoas", texto:"A instituição dispõe de equipe e competências adequadas para conduzir ações de segurança da informação e privacidade.", bench:3.88, rho:0.432, camada:2},
+ {c:"C3", nome:"Processos", curto:"Processos", texto:"Processos de segurança da informação e privacidade, incluindo gestão de vulnerabilidades e backup/restauração, são executados e testados regularmente.", bench:4.00, rho:0.479, camada:2},
+ {c:"C4", nome:"Tecnologia e monitoramento", curto:"Tecnologia", texto:"A instituição dispõe de recursos tecnológicos compatíveis com sua complexidade e perfil de risco para manter visibilidade sobre seus ativos e apoiar o monitoramento, a detecção e a resposta a eventos de segurança.", bench:3.74, rho:0.586, camada:2},
+ {c:"C5", nome:"Gestão de dados pessoais e privacidade", curto:"Dados pessoais", texto:"A gestão de dados pessoais e privacidade, incluindo mapeamento de tratamentos, bases legais e RIPD, está implementada e em funcionamento.", bench:3.17, rho:0.298, camada:3},
+ {c:"C6", nome:"Gestão de riscos integrada", curto:"Riscos", texto:"A gestão de riscos de segurança da informação e privacidade está integrada ao planejamento e ao orçamento institucional.", bench:3.05, rho:0.612, camada:3},
+ {c:"C7", nome:"Treinamento e conscientização", curto:"Treinamento", texto:"A instituição promove ações de treinamento e conscientização em segurança da informação e privacidade com alcance entre diferentes públicos institucionais.", bench:3.81, rho:0.339, camada:2},
+ {c:"C8", nome:"Recursos orçamentários e contratuais", curto:"Recursos", texto:"A instituição dispõe de recursos orçamentários e contratuais suficientes para sustentar ações de segurança da informação e privacidade previstas no PPSI.", bench:2.71, rho:0.553, camada:3}
+];
+const EF = [
+ {c:"E1", texto:"Após o início da implementação do PPSI, as interrupções em serviços digitais essenciais tiveram menor frequência.", bench:4.05, dom:"Continuidade e disponibilidade"},
+ {c:"E2", texto:"Após o início da implementação do PPSI, serviços críticos passaram a ser restabelecidos com maior rapidez após interrupções.", bench:4.10, dom:"Continuidade e disponibilidade"},
+ {c:"E3", texto:"Nos últimos 12 meses, a instituição tornou-se mais ágil na detecção de incidentes de segurança.", bench:4.59, dom:"Detecção e resposta"},
+ {c:"E4", texto:"Nos últimos 12 meses, a instituição tornou-se mais ágil na contenção e recuperação após incidentes de segurança.", bench:4.48, dom:"Detecção e resposta"},
+ {c:"E5", texto:"Nos últimos 12 meses, a exposição da instituição a riscos críticos de segurança da informação e privacidade diminuiu.", bench:4.36, dom:"Mitigação de risco"},
+ {c:"E6", texto:"Nos últimos 12 meses, incidentes envolvendo dados pessoais tornaram-se menos frequentes ou menos graves.", bench:4.31, dom:"Proteção de dados pessoais"},
+ {c:"E7", texto:"Após o início da implementação do PPSI, quando aplicáveis, as notificações de incidentes a titulares e à ANPD ocorreram de forma tempestiva e adequadamente documentada.", bench:4.45, dom:"Transparência e conformidade"},
+ {c:"E8", texto:"Nos últimos 12 meses, auditorias e monitoramentos indicaram avanço na conformidade em segurança da informação e privacidade, inclusive quanto às exigências da LGPD.", bench:4.21, dom:"Transparência e conformidade"},
+ {c:"E9", texto:"Nos últimos 12 meses, cresceu, entre as áreas-fim, a percepção de que a instituição protege informações e dados pessoais.", bench:4.19, dom:"Confiança e percepção"},
+ {c:"E10", texto:"Nos últimos 12 meses, a alta administração reconheceu ganhos institucionais associados ao PPSI.", bench:3.91, dom:"Confiança e percepção"}
+];
+const RECOM = {
+ C1:"Ativar a governança para além da estrutura: pautas periódicas do comitê com decisões registradas, papéis exercidos na prática e acompanhamento das deliberações.",
+ C2:"Fortalecer equipe e competências: dimensionamento mínimo, capacitação técnica continuada e retenção de pessoas-chave nas funções de segurança e privacidade.",
+ C3:"Estabilizar processos executados e testados: gestão de vulnerabilidades com ciclo regular, backup com testes periódicos de restauração e registro sistemático de incidentes.",
+ C4:"Priorizar visibilidade tecnológica proporcional ao risco: inventário de ativos, registro centralizado (logging) e monitoramento com capacidade de detecção e resposta.",
+ C5:"Converter a privacidade em função de gestão contínua: mapeamento de tratamentos priorizado por criticidade, bases legais definidas, RIPD dos tratamentos críticos e rede de pontos focais nas áreas-fim.",
+ C6:"Integrar a gestão de riscos ao planejamento e ao orçamento: riscos de segurança e privacidade no plano institucional de riscos, com tratamento refletido no PDI/PDTIC e na proposta orçamentária. Na pesquisa nacional, esta é a capacidade mais associada à efetividade em todas as suas dimensões.",
+ C7:"Redesenhar a capacitação por público e comportamento-alvo (docentes, técnicos, estudantes, terceirizados, gestores), medindo efeito comportamental, e não apenas alcance.",
+ C8:"Sustentação material: plano plurianual de investimentos em segurança e privacidade, contratações conjuntas e arranjos cooperativos entre IFES (SOC compartilhado, reuso de soluções, comunidades de prática)."
+};
+const REC_E10 = "Institucionalizar a comunicação executiva de resultados: relatório periódico à alta administração traduzindo não-eventos em linguagem de valor (riscos mitigados, exposição reduzida, conformidade demonstrada), com apoio da auditoria interna e dos comitês.";
+/* Desdobramento das recomendações: evidência, linhas de ação, indicadores, referenciais e atores.
+   Conteúdo ancorado nas linhas de ação da dissertação e em referenciais públicos consolidados. */
+const REC2 = {
+ C1:{evid:"Na pesquisa nacional, a governança é a capacidade mais consolidada das IFES (média 4,72): o desafio típico não é criar estrutura, mas fazê-la operar e decidir.",
+  acoes:["Instituir calendário anual de reuniões do comitê do PPSI, com pauta mínima (riscos, incidentes, plano de ação) e registro de deliberações.",
+   "Formalizar e publicar papéis e responsabilidades — gestor do PPSI, encarregado (LGPD), ETIR, gestores de ativos —, revisando atos normativos desatualizados e assegurando ao gestor canal direto de reporte à alta administração.",
+   "Estabelecer acompanhamento das deliberações com responsável e prazo, reportado na reunião seguinte.",
+   "Prever prestação de contas anual do programa à alta administração, articulada com a auditoria interna."],
+  refs:"Framework e guias operacionais do PPSI (SGD/MGI); PNSI (Decreto nº 12.572/2025); levantamentos de governança do TCU; ISO/IEC 27001 e 27014 (liderança e governança).",
+  ind:["% de reuniões do comitê realizadas conforme calendário","% de deliberações implementadas no prazo","prestação de contas anual apresentada (sim/não)"],
+  atores:"Alta administração, comitê de governança/SI, gestor do PPSI, encarregado (LGPD), auditoria interna."},
+ C2:{evid:"Capacidade com associação moderada com a efetividade na pesquisa nacional (ρ 0,432) e média nacional de 3,88 — a operação do programa depende diretamente dela.",
+  acoes:["Dimensionar formalmente a equipe mínima de segurança e privacidade, com funções descritas e substitutos designados para pessoas-chave.",
+   "Levantar lacunas de competências e priorizar trilhas de capacitação técnica (resposta a incidentes, gestão de vulnerabilidades, privacidade).",
+   "Adotar mecanismos de atração e retenção viáveis no serviço público: funções gratificadas, teletrabalho, participação em projetos e comunidades.",
+   "Reduzir a dependência de indivíduos: documentar procedimentos críticos e planejar rodízio."],
+  refs:"Guias do PPSI sobre estrutura e papéis; trilhas de escolas de governo (ex.: ENAP) e das redes acadêmicas; ISO/IEC 27001 (competência).",
+  ind:["servidores com função formalizada em SI/privacidade","horas de capacitação técnica da equipe por ano","rotatividade nas funções-chave"],
+  atores:"Gestão de pessoas, direção de TI, comitê do PPSI, escolas de governo."},
+ C3:{evid:"Média nacional de 4,00 e associação relevante com a efetividade (ρ 0,479): processos executados e testados são o elo entre a norma e o resultado.",
+  acoes:["Priorizar os processos de maior risco: gestão de vulnerabilidades, cópias de segurança com testes de restauração e registro e tratamento de incidentes.",
+   "Definir donos de processo, periodicidade e evidências mínimas de execução (relatórios, atas, logs).",
+   "Testar a restauração de backup dos sistemas críticos em ciclo regular, documentando resultados e pendências.",
+   "Unificar o registro de incidentes, com classificação de severidade e lições aprendidas."],
+  refs:"Grupos de controles do framework PPSI (inspirados no CIS Controls v8); NIST CSF (Proteger/Responder/Recuperar); ISO/IEC 27002.",
+  ind:["% de sistemas críticos com restauração testada no período","tempo mediano de correção de vulnerabilidades críticas","% de incidentes com registro completo e lição aprendida"],
+  atores:"Equipes de TI/infraestrutura, ETIR, gestores de sistemas críticos."},
+ C4:{evid:"Segunda maior associação com a efetividade na pesquisa nacional (ρ 0,586), com média nacional de 3,74: sem visibilidade tecnológica não há detecção nem resposta.",
+  acoes:["Consolidar o inventário de ativos (hardware, software, serviços em nuvem) como pré-condição de visibilidade.",
+   "Centralizar os registros (logs) dos sistemas críticos e definir retenção mínima.",
+   "Estruturar monitoramento, detecção e resposta proporcionais ao risco — capacidade própria, compartilhada entre IFES ou contratada (SOC).",
+   "Buscar soluções compartilhadas de monitoramento e resposta entre as instituições — SOC compartilhado (ex.: RNP) — e os serviços de alerta antecipado e apoio ao tratamento de incidentes da rede acadêmica."],
+  refs:"Controles de visibilidade e monitoramento do PPSI/CIS v8; NIST CSF (Identificar/Detectar); serviços de segurança das redes acadêmicas.",
+  ind:["% de ativos inventariados","cobertura de logs centralizados nos sistemas críticos","tempo médio de detecção e de resposta a incidentes"],
+  atores:"Direção de TI, ETIR, parcerias interinstitucionais, área de contratações."},
+ C5:{evid:"Fragilidade generalizada nas IFES (média nacional 3,17): a privacidade tende a estagnar quando tratada como projeto pontual, e não como função de gestão contínua.",
+  acoes:["Mapear tratamentos por criticidade (dados acadêmicos, saúde, assistência estudantil), em vez de tentar mapear tudo de uma vez.",
+   "Definir bases legais e manter atualizado o registro das operações de tratamento.",
+   "Elaborar o RIPD dos tratamentos de alto risco, conforme orientações da ANPD.",
+   "Constituir rede de pontos focais de privacidade nas áreas-fim, com papel definido e capacitação básica."],
+  refs:"LGPD (Lei nº 13.709/2018); guias e orientações da ANPD (RIPD, agentes de tratamento); guias de privacidade do PPSI (SGD/MGI).",
+  ind:["% de tratamentos críticos mapeados com base legal definida","nº de RIPD concluídos","tempo de resposta a solicitações de titulares"],
+  atores:"Encarregado (LGPD), áreas-fim, procuradoria, TI, comitê do PPSI."},
+ C6:{evid:"Capacidade mais associada à efetividade em todas as dimensões na pesquisa nacional (ρ 0,612) e uma das mais frágeis (média 3,05): é onde o esforço tende a gerar maior retorno.",
+  acoes:["Incluir os riscos de segurança e privacidade na matriz institucional de riscos, com critérios de priorização aprovados em comitê.",
+   "Vincular o tratamento dos riscos priorizados a ações com responsável, prazo e recurso, refletidas no PDI/PDTIC, na proposta orçamentária e no plano de contratações anual.",
+   "Revisar a matriz em ciclo definido (ao menos anual) e ancorar decisões de investimento na exposição a risco.",
+   "Integrar-se à estrutura de riscos e integridade já existente na instituição, evitando estruturas paralelas."],
+  refs:"IN Conjunta MP/CGU nº 1/2016 (gestão de riscos na APF); ISO 31000 e ISO/IEC 27005; framework PPSI; Lei nº 14.133/2021 (plano de contratações anual); orientações do TCU sobre gestão de riscos.",
+  ind:["% de riscos de SI/privacidade com tratamento definido e orçado","% de ações de tratamento executadas no prazo","decisões de PDI/PDTIC vinculadas à matriz de riscos"],
+  atores:"Planejamento e orçamento, comitê de riscos/integridade, TI, auditoria interna, alta administração."},
+ C7:{evid:"Média nacional de 3,81 e associação positiva com a efetividade (ρ 0,339): o alcance costuma existir; o que falta é efeito comportamental mensurado.",
+  acoes:["Segmentar a capacitação por público — docentes, técnicos, estudantes, terceirizados, gestores —, com comportamento-alvo definido para cada um.",
+   "Medir efeito, e não apenas alcance: simulações de phishing, verificações de aprendizagem, observação de práticas.",
+   "Integrar a conscientização ao calendário institucional (ingresso de estudantes, posse de servidores, contratação de terceirizados).",
+   "Reaproveitar materiais públicos (SGD, ANPD, redes acadêmicas), adaptando-os à identidade institucional."],
+  refs:"Guias de conscientização do PPSI; materiais públicos da ANPD e das redes acadêmicas; boas práticas internacionais de security awareness (NIST).",
+  ind:["taxa de conclusão por público","tendência da taxa de cliques em simulações","% de ingressantes alcançados no primeiro mês"],
+  atores:"Comunicação institucional, gestão de pessoas, unidades acadêmicas, TI."},
+ C8:{evid:"Capacidade mais frágil da pesquisa nacional (média 2,71) e terceira mais associada à efetividade (ρ 0,553): o gargalo material limita todas as demais.",
+  acoes:["Quantificar o custo de sustentação do PPSI (licenças, contratos, equipe, capacitação) e apresentá-lo à alta administração a tempo da elaboração da proposta orçamentária e do plano de contratações anual.",
+   "Elaborar plano plurianual de investimentos em segurança e privacidade, priorizado pela matriz de riscos.",
+   "Explorar arranjos cooperativos entre IFES: contratações conjuntas, atas compartilhadas, SOC compartilhado, reuso de soluções públicas.",
+   "Assegurar continuidade contratual dos serviços críticos, evitando lacunas de vigência."],
+  refs:"Framework PPSI (sustentação); Lei nº 14.133/2021 (planejamento anual de contratações); instrumentos de compras compartilhadas do governo federal; fóruns de gestores de TI das IFES; catálogo de soluções gov.br.",
+  ind:["execução orçamentária das ações planejadas de SI","% de contratos críticos sem lacuna de vigência","participação em iniciativas cooperativas (sim/não)"],
+  atores:"Planejamento/administração, direção de TI, alta administração, fóruns interinstitucionais."}
+};
+const TRANS2 = {
+  acoes:["Instituir relatório executivo periódico (ao menos semestral) à alta administração, traduzindo não-eventos em valor: riscos mitigados, exposição reduzida, conformidade demonstrada.",
+   "Apresentar resultados em linguagem de gestão — impacto em continuidade, reputação e conformidade —, e não em jargão técnico.",
+   "Reaplicar o GACE-PPSI anualmente e usar a série comparativa como base objetiva da comunicação."],
+  ind:["apresentações formais à alta administração por ano","reconhecimento registrado em atas e planos institucionais","evolução do domínio confiança e percepção na reaplicação"],
+  atores:"Gestor do PPSI, auditoria interna, comitês, comunicação institucional."};
+/* Plano de ação sugerido por capacidade (horizontes indicativos) */
+const PLANO = {
+ C1:{qw:"Retomar a agenda do comitê com pauta periódica e registro de deliberações; designar formalmente os papéis vagos.",
+     est:"Instituir ciclo anual de governança: prestação de contas do PPSI à alta administração, com indicadores e acompanhamento das decisões."},
+ C2:{qw:"Mapear lacunas de competências da equipe e priorizar capacitações técnicas de curta duração.",
+     est:"Plano de dimensionamento e retenção de pessoas-chave para as funções críticas de segurança e privacidade."},
+ C3:{qw:"Inventariar os processos críticos; testar a restauração de backup e unificar o registro de incidentes.",
+     est:"Ciclo regular de gestão de vulnerabilidades com metas de correção e revisão periódica dos processos."},
+ C4:{qw:"Consolidar o inventário de ativos e centralizar os registros (logs) dos sistemas críticos.",
+     est:"Estruturar capacidade de monitoramento, detecção e resposta proporcional ao risco (SOC próprio, compartilhado ou contratado)."},
+ C5:{qw:"Priorizar o mapeamento dos tratamentos de dados mais críticos e definir suas bases legais.",
+     est:"Elaborar RIPD dos tratamentos críticos e constituir rede de pontos focais de privacidade nas áreas-fim."},
+ C6:{qw:"Levar os riscos de segurança e privacidade à matriz institucional de riscos do próximo ciclo de planejamento.",
+     est:"Refletir o tratamento dos riscos no PDI/PDTIC, na proposta orçamentária e no plano de contratações anual."},
+ C7:{qw:"Lançar campanha segmentada por público, com comportamento-alvo definido e mensurável.",
+     est:"Programa permanente de capacitação com medição de efeito comportamental (simulações e indicadores), não apenas de alcance."},
+ C8:{qw:"Quantificar o custo de sustentação do PPSI e apresentá-lo à alta administração no ciclo orçamentário.",
+     est:"Plano plurianual de investimentos e arranjos cooperativos entre IFES: contratações conjuntas, SOC compartilhado, reuso de soluções."}
+};
+const CAMNOME = {1:"Institucionalização formal", 2:"Operação sociotécnica", 3:"Sustentação material e integração decisória"};
+const CAMDESC = {1:"Governança (C1)", 2:"Pessoas, processos, tecnologia e treinamento (C2, C3, C4, C7)", 3:"Dados pessoais, riscos e recursos (C5, C6, C8)"};
+const CAMBENCH = {1:4.72, 2:3.86, 3:2.98};
+const BENCH_CAP_TOT = 3.64, BENCH_EF_TOT = 4.27;
+
+/* ===== Estado ===== */
+let resp = {cap:{}, ef:{}};
+let anterior = null;
+
+/* ===== Versão e atualizações (verificação manual; nenhum dado é enviado) ===== */
+const VERSAO_APP = "1.1";
+const ATUALIZACAO = {
+  manifesto: "https://raw.githubusercontent.com/flaviotesta/gace-ppsi/main/versao.json",
+  pagina: "https://github.com/flaviotesta/gace-ppsi/releases/latest"
+};
+const esc = s => String(s).replace(/[<>&"]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;","\"":"&quot;"}[c]));
+function cmpVersao(a, b){
+  const pa = String(a).split(".").map(Number), pb = String(b).split(".").map(Number);
+  for(let i = 0; i < Math.max(pa.length, pb.length); i++){
+    const x = pa[i]||0, y = pb[i]||0;
+    if(x !== y) return x > y ? 1 : -1;
+  }
+  return 0;
+}
+async function verificarAtualizacao(){
+  const alvo = document.getElementById("avisoAtualizacao");
+  alvo.style.display = "block";
+  if(ATUALIZACAO.manifesto.includes("SEU-" + "USUARIO")){
+    alvo.className = "aviso-at";
+    alvo.innerHTML = `A verificação de atualizações ainda não foi configurada nesta cópia. <button class="linkbt" onclick="this.closest('.aviso-at').style.display='none'">Fechar</button>`;
+    return;
+  }
+  alvo.className = "aviso-at";
+  alvo.textContent = "Verificando…";
+  try{
+    const r = await fetch(ATUALIZACAO.manifesto, {cache:"no-store"});
+    const d = await r.json();
+    const link = (typeof d.download === "string" && d.download.startsWith("https://github.com/")) ? d.download : ATUALIZACAO.pagina;
+    if(cmpVersao(d.versao, VERSAO_APP) > 0){
+      alvo.className = "aviso-at nova";
+      alvo.innerHTML = `<b>Nova versão disponível: v${esc(d.versao)}</b> (sua cópia: v${VERSAO_APP}).${d.notas ? " " + esc(d.notas) : ""}
+        Seus dados permanecem neste computador; se houver rascunho em andamento, exporte-o em JSON antes de trocar de arquivo.
+        <a href="${link}" target="_blank" rel="noopener">Baixar a nova versão</a> ·
+        <button class="linkbt" onclick="this.closest('.aviso-at').style.display='none'">Agora não</button>`;
+    } else {
+      alvo.className = "aviso-at ok";
+      alvo.innerHTML = `Sua cópia (v${VERSAO_APP}) é a versão mais recente. <button class="linkbt" onclick="this.closest('.aviso-at').style.display='none'">Fechar</button>`;
+    }
+  }catch(e){
+    alvo.className = "aviso-at";
+    alvo.innerHTML = `Não foi possível verificar agora (sem conexão ou acesso restrito). Você pode conferir manualmente na <a href="${ATUALIZACAO.pagina}" target="_blank" rel="noopener">página de versões</a>. <button class="linkbt" onclick="this.closest('.aviso-at').style.display='none'">Fechar</button>`;
+  }
+}
+
+/* ===== Navegação (stepper) ===== */
+const TELAS = ["Início","Identificação","Capacidades","Efetividade","Diagnóstico","Método"];
+function montarNav(){
+  document.getElementById("nav").innerHTML =
+    TELAS.map((t,i)=>`<button id="nav${i}" onclick="irPara(${i})" aria-label="${t}"><span class="bola">${i+1}</span><span class="rot">${t}</span></button>`).join("");
+}
+function irPara(n){
+  document.querySelectorAll("section.tela").forEach(s=>s.classList.toggle("ativa", s.dataset.tela==String(n)));
+  document.querySelectorAll("nav.passos button").forEach((b,i)=>{
+    b.classList.toggle("ativo", i===n); b.classList.toggle("feito", i<n);
+  });
+  if(n===4) calcular();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ===== Render dos itens ===== */
+function regua(bloco, codigo){
+  let h = `<div class="regua" id="lk_${codigo}"><div class="caixas">`;
+  for(let v=1; v<=7; v++) h += `<button type="button" aria-label="${v}" onclick="marcar('${bloco}','${codigo}',${v})">${v}</button>`;
+  h += `</div><div class="linha"><span>discordo totalmente</span><span>neutro</span><span>concordo totalmente</span></div></div>`;
+  return h;
+}
+function montarItens(){
+  document.getElementById("listaCap").innerHTML = CAP.map(it=>
+    `<div class="item"><span class="rotulo">${it.c} — ${it.nome}</span><p class="texto">${it.texto}</p>${regua("cap",it.c)}</div>`).join("");
+  document.getElementById("listaEf").innerHTML = EF.map(it=>
+    `<div class="item"><span class="rotulo">${it.c} — ${it.dom}</span><p class="texto">${it.texto}</p>${regua("ef",it.c)}</div>`).join("");
+}
+function marcar(bloco, codigo, v){
+  resp[bloco][codigo]=v;
+  document.getElementById("lk_"+codigo).querySelectorAll("button").forEach((b,i)=>b.classList.toggle("sel", i===v-1));
+  atualizaContadores();
+  salvarRascunho(true);
+}
+function atualizaContadores(){
+  const nc = CAP.filter(it=>resp.cap[it.c]).length, ne = EF.filter(it=>resp.ef[it.c]).length;
+  const ec = document.getElementById("contCap"), ee = document.getElementById("contEf");
+  if(ec) ec.innerHTML = `<b>${nc}</b>&nbsp;de 8 itens respondidos`;
+  if(ee) ee.innerHTML = `<b>${ne}</b>&nbsp;de 10 itens respondidos`;
+}
+function validarBloco(bloco, prox){
+  const itens = bloco==="cap"?CAP:EF;
+  const ok = itens.every(it=>resp[bloco][it.c]);
+  document.getElementById(bloco==="cap"?"avisoCap":"avisoEf").style.display = ok?"none":"flex";
+  if(ok) irPara(prox);
+}
+
+/* ===== Utilidades ===== */
+const media = a => a.reduce((x,y)=>x+y,0)/a.length;
+const f1 = x => x.toFixed(2).replace(".",",");
+const fdelta = d => (d>=0?"+":"−")+f1(Math.abs(d));
+const rotulo = v => v>=5 ? "consolidada" : (v>=4 ? "intermediária" : "frágil");
+const stClasse = v => v>=5 ? "cons" : (v>=4 ? "int" : "frag");
+const chipSt = v => `<span class="chip-st st-${stClasse(v)}">${rotulo(v)}</span>`;
+const fillCls = v => v>=5 ? "forte" : (v>=4 ? "medio" : "fraco");
+const corSt = v => v>=5 ? "#168821" : (v>=4 ? "#E39A2D" : "#D3200D");
+
+function dominiosEf(){
+  const doms = {};
+  EF.forEach(it=>{ (doms[it.dom] ||= {v:[], b:[]}); doms[it.dom].v.push(resp.ef[it.c]); doms[it.dom].b.push(it.bench); });
+  return Object.entries(doms).map(([nome,o])=>({nome, valor:media(o.v), bench:media(o.b)}));
+}
+function prioridades(){
+  return CAP.map(it=>({...it, escore:resp.cap[it.c], p:(7-resp.cap[it.c])*it.rho})).sort((a,b)=>b.p-a.p).slice(0,3);
+}
+function classifica(capTot, efTot){
+  if(capTot>=4 && efTot>=4) return {t:"Programa em consolidação",
+    d:"Capacidades e efetividade percebida acima do ponto neutro: o desafio passa a ser sustentar e aprofundar os resultados."};
+  if(capTot<4 && efTot>=4) return {t:"Resultados sem lastro pleno de capacidades",
+    d:"A efetividade percebida supera o neutro, mas apoia-se em capacidades ainda frágeis — há risco de sustentabilidade dos resultados no médio prazo."};
+  if(capTot>=4 && efTot<4) return {t:"Capacidade ainda não convertida em resultado",
+    d:"A estrutura existe, mas os resultados percebidos não a acompanham — atenção aos elos de execução e à comunicação dos ganhos."};
+  return {t:"Estágio inicial de estruturação",
+    d:"Capacidades e resultados percebidos abaixo do ponto neutro: priorização estrita e sustentação material são críticas."};
+}
+
+/* ===== Gráficos SVG (gerados localmente, sem bibliotecas) ===== */
+function radarSVG(vals, bens, size){
+  size = size || 470;
+  const cx=size/2, cy=size/2, R=size/2-78, fs=size>=420?12:10.5;
+  const ang=i=>(-90+i*45)*Math.PI/180;
+  const px=(v,i)=>(cx+(v-1)/6*R*Math.cos(ang(i))).toFixed(1);
+  const py=(v,i)=>(cy+(v-1)/6*R*Math.sin(ang(i))).toFixed(1);
+  const anel=v=>CAP.map((_,i)=>`${px(v,i)},${py(v,i)}`).join(" ");
+  const polig=a=>a.map((v,i)=>`${px(v,i)},${py(v,i)}`).join(" ");
+  let s=`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Radar de capacidades">`;
+  [2,3,5,6,7].forEach(v=> s+=`<polygon points="${anel(v)}" fill="none" stroke="#E2E9F4" stroke-width="1"/>`);
+  s+=`<polygon points="${anel(4)}" fill="none" stroke="#98A4B8" stroke-width="1.4" stroke-dasharray="5 4"/>`;
+  for(let i=0;i<8;i++) s+=`<line x1="${cx}" y1="${cy}" x2="${px(7,i)}" y2="${py(7,i)}" stroke="#E2E9F4" stroke-width="1"/>`;
+  s+=`<text x="${cx+5}" y="${cy-3/6*R-3}" font-size="${fs-2}" fill="#98A4B8">4</text>`;
+  s+=`<text x="${cx+5}" y="${cy-R+11}" font-size="${fs-2}" fill="#98A4B8">7</text>`;
+  s+=`<polygon points="${polig(bens)}" fill="none" stroke="#8E9BB1" stroke-width="2" stroke-dasharray="6 5" stroke-linejoin="round"/>`;
+  s+=`<polygon points="${polig(vals)}" fill="rgba(19,81,180,.16)" stroke="#1351B4" stroke-width="2.5" stroke-linejoin="round"/>`;
+  vals.forEach((v,i)=> s+=`<circle cx="${px(v,i)}" cy="${py(v,i)}" r="3.6" fill="#1351B4"/>`);
+  CAP.forEach((it,i)=>{
+    const c=Math.cos(ang(i)), sn=Math.sin(ang(i));
+    const lr=R+(Math.abs(sn)>.8?26:16);
+    const lx=cx+lr*c, ly=cy+lr*sn;
+    const anc=c>.3?"start":(c<-.3?"end":"middle");
+    const dy=sn>.5?10:(sn<-.5?-4:4);
+    s+=`<text x="${lx.toFixed(1)}" y="${(ly+dy).toFixed(1)}" text-anchor="${anc}" font-size="${fs}" font-weight="600" fill="#33415C">${it.c} · ${it.curto}</text>`;
+  });
+  return s+"</svg>";
+}
+function barrasSVG(rows, width){
+  width = width || 690;
+  const rowH=34, x0=210, tw=width-x0-60, top=8, H=top+rows.length*rowH+6;
+  const cli=t=>t.length>36?t.slice(0,35)+"…":t;
+  let s=`<svg width="${width}" height="${H}" viewBox="0 0 ${width} ${H}" xmlns="http://www.w3.org/2000/svg" role="img">`;
+  rows.forEach((r,idx)=>{
+    const y=top+idx*rowH;
+    const w=Math.max(6,(r.value-1)/6*tw), bx=x0+(r.bench-1)/6*tw;
+    s+=`<text x="${x0-10}" y="${y+21}" text-anchor="end" font-size="9.5" fill="#333">${r.cod?`<tspan font-weight="700" fill="#0C326F">${r.cod}</tspan> · `:""}${cli(r.label)}</text>`;
+    s+=`<rect x="${x0}" y="${y+11}" width="${tw}" height="11" rx="5.5" fill="#EDF1F8"/>`;
+    s+=`<rect x="${x0}" y="${y+11}" width="${w.toFixed(1)}" height="11" rx="5.5" fill="${corSt(r.value)}"/>`;
+    s+=`<line x1="${x0+tw/2}" y1="${y+6}" x2="${x0+tw/2}" y2="${y+27}" stroke="#98A4B8" stroke-width="1" stroke-dasharray="2 3"/>`;
+    s+=`<line x1="${bx.toFixed(1)}" y1="${y+7}" x2="${bx.toFixed(1)}" y2="${y+26}" stroke="#1B1B1B" stroke-width="2"/>`;
+    s+=`<text x="${x0+tw+10}" y="${y+21}" font-size="10" font-weight="700" fill="#1B1B1B">${f1(r.value)}</text>`;
+  });
+  return s+"</svg>";
+}
+
+/* ===== Apresentação na tela ===== */
+function linhaEscore(cod, nome, valor, bench){
+  const pct=((valor-1)/6*100).toFixed(1), bpct=((bench-1)/6*100).toFixed(1);
+  return `<div class="linha-escore">
+    <div class="topo"><span class="nome">${cod?`<span class="cod">${cod}</span>`:""}${nome}</span>
+    <span class="valores"><b>${f1(valor)}</b>${chipSt(valor)}<span style="margin-left:10px">IFES ${f1(bench)}</span></span></div>
+    <div class="trilho"><div class="cheio ${fillCls(valor)}" style="width:${pct}%"></div><div class="neutro"></div><div class="marca-ifes" style="left:${bpct}%">▾</div></div></div>`;
+}
+function completo(){ return CAP.every(it=>resp.cap[it.c]) && EF.every(it=>resp.ef[it.c]); }
+function calcular(){
+  if(!completo()){
+    document.getElementById("resumo").innerHTML =
+      `<div class="kpi" style="grid-column:1/-1"><div class="klabel">Diagnóstico indisponível</div>
+       <p style="margin:6px 0 12px">Há itens sem resposta nos blocos de capacidades ou efetividade. Complete os 18 itens para gerar o diagnóstico.</p>
+       <button class="bt principal" onclick="irPara(2)">Continuar respondendo</button></div>`;
+    ["radarCap","graficoCap","graficoEf","camadas","prioridades","comparacao"].forEach(id=>document.getElementById(id).innerHTML="");
+    return;
+  }
+  const capTot = media(CAP.map(it=>resp.cap[it.c]));
+  const efTot  = media(EF.map(it=>resp.ef[it.c]));
+  const doms = dominiosEf();
+  const cam = [1,2,3].map(n=>({n, valor:media(CAP.filter(i=>i.camada===n).map(i=>resp.cap[i.c]))}));
+  const perfil = classifica(capTot, efTot);
+  const dC = capTot-BENCH_CAP_TOT, dE = efTot-BENCH_EF_TOT;
+
+  document.getElementById("resumo").innerHTML =
+    `<div class="kpi"><div class="klabel">Capacidades institucionais</div><div class="kval">${f1(capTot)}<small> / 7</small></div>
+      <div style="margin-top:7px">${chipSt(capTot)}</div>
+      <div class="kdelta"><b class="${dC>=0?"up":"down"}">${dC>=0?"▲":"▼"} ${fdelta(dC)}</b> vs. padrão IFES (3,64)</div></div>
+     <div class="kpi"><div class="klabel">Efetividade percebida</div><div class="kval">${f1(efTot)}<small> / 7</small></div>
+      <div style="margin-top:7px">${chipSt(efTot)}</div>
+      <div class="kdelta"><b class="${dE>=0?"up":"down"}">${dE>=0?"▲":"▼"} ${fdelta(dE)}</b> vs. padrão IFES (4,27)</div></div>
+     <div class="kpi perfil"><div class="klabel">Perfil do programa</div><div class="kperfil">${perfil.t}</div><p>${perfil.d}</p></div>`;
+
+  document.getElementById("radarCap").innerHTML = radarSVG(CAP.map(it=>resp.cap[it.c]), CAP.map(it=>it.bench));
+  document.getElementById("graficoCap").innerHTML = CAP.map(it=>linhaEscore(it.c, it.nome, resp.cap[it.c], it.bench)).join("");
+  document.getElementById("graficoEf").innerHTML = doms.map(d=>linhaEscore("", d.nome, d.valor, d.bench)).join("");
+  document.getElementById("camadas").innerHTML = cam.map(c=>{
+    const pct=((c.valor-1)/6*100).toFixed(1), bpct=((CAMBENCH[c.n]-1)/6*100).toFixed(1);
+    return `<div class="camcard"><div class="rom">${["I","II","III"][c.n-1]}</div><b class="cnome">${CAMNOME[c.n]}</b>
+      <div class="cdesc">${CAMDESC[c.n]}</div>
+      <div class="cval">${f1(c.valor)} <small>/ 7 · IFES ${f1(CAMBENCH[c.n])}</small></div>
+      <div class="trilho"><div class="cheio ${fillCls(c.valor)}" style="width:${pct}%"></div><div class="neutro"></div><div class="marca-ifes" style="left:${bpct}%">▾</div></div></div>`;
+  }).join("");
+
+  const prio = prioridades();
+  const confPerc = doms.find(d=>d.nome==="Confiança e percepção").valor;
+  const desdobra = (r)=>`<details class="desdobra"><summary>Ver desdobramento — ações, indicadores, referenciais e atores</summary>
+    ${r.evid?`<p style="font-size:.85rem; font-style:italic; margin:8px 0 0">${r.evid}</p>`:""}
+    <div class="dtit">Linhas de ação</div><ul>${r.acoes.map(a=>`<li>${a}</li>`).join("")}</ul>
+    <div class="dtit">Indicadores de acompanhamento sugeridos</div><ul>${r.ind.map(a=>`<li>${a}</li>`).join("")}</ul>
+    ${r.refs?`<div class="dtit">Referenciais de apoio</div><p style="font-size:.85rem; margin:4px 0 0">${r.refs}</p>`:""}
+    <div class="dtit">Atores a envolver</div><p style="font-size:.85rem; margin:4px 0 0">${r.atores}</p></details>`;
+  let ph = prio.map((p,i)=>`<div class="prio"><span class="pn">${i+1}</span><div style="flex:1">
+    <b class="pt">${p.nome} (${p.c})</b>
+    <div class="pmeta">Escore ${f1(p.escore)} · associação com a efetividade na pesquisa nacional (ρ): ${String(p.rho).replace(".",",")} · Camada ${["I","II","III"][p.camada-1]}</div>
+    <p>${RECOM[p.c]}</p>${desdobra(REC2[p.c])}</div></div>`).join("");
+  if(confPerc<4) ph += `<div class="prio transversal"><span class="pn">!</span><div style="flex:1">
+    <b class="pt">Recomendação transversal — comunicação executiva</b>
+    <div class="pmeta">Domínio de confiança e percepção em ${f1(confPerc)}</div>
+    <p>${REC_E10}</p>${desdobra(TRANS2)}</div></div>`;
+  document.getElementById("prioridades").innerHTML = ph;
+
+  let ch = "";
+  if(anterior){
+    const capAnt = media(CAP.map(it=>anterior.cap[it.c]||0));
+    const efAnt = media(EF.map(it=>anterior.ef[it.c]||0));
+    ch = `<h3 class="secao">Evolução em relação à avaliação importada (${anterior.meta?.dataref||"data não informada"})</h3>
+      <table class="quadro"><tr><th>Indicador</th><th>Anterior</th><th>Atual</th><th>Variação</th></tr>
+      <tr><td>Capacidades</td><td>${f1(capAnt)}</td><td>${f1(capTot)}</td><td><b style="color:${capTot-capAnt>=0?"var(--verde)":"var(--verm)"}">${fdelta(capTot-capAnt)}</b></td></tr>
+      <tr><td>Efetividade</td><td>${f1(efAnt)}</td><td>${f1(efTot)}</td><td><b style="color:${efTot-efAnt>=0?"var(--verde)":"var(--verm)"}">${fdelta(efTot-efAnt)}</b></td></tr></table>`;
+  }
+  document.getElementById("comparacao").innerHTML = ch;
+}
+
+/* ===== Relatório executivo (impressão/PDF) ===== */
+function meta(){
+  return {inst:val("inst"), tipo:val("tipo"), regiao:val("regiao"), multicampi:val("multicampi"),
+          perfil:val("perfil"), dataref:val("dataref")};
+}
+function val(id){ return document.getElementById(id).value; }
+const LOGO_REL = `<svg width="52" height="58" viewBox="0 0 64 72"><path d="M32 3 58 13v25c0 16-11 26-26 31C17 64 6 54 6 38V13Z" fill="#1351B4"/><rect x="17" y="21" width="30" height="7.5" rx="3.75" fill="#fff"/><rect x="21" y="33.5" width="22" height="7.5" rx="3.75" fill="#fff" opacity=".85"/><rect x="25" y="46" width="14" height="7.5" rx="3.75" fill="#FFCD07"/></svg>`;
+const stRel = v => `<span class="st ${v>=5?"c":(v>=4?"i":"f")}">${rotulo(v)}</span>`;
+const dRel = d => `<span class="${d>=0?"delta-pos":"delta-neg"}">${fdelta(d)}</span>`;
+const listaNomes = a => a.map(x=>x.nome.toLowerCase()+" ("+f1(x.escore!==undefined?x.escore:x.valor)+")").join("; ");
+
+function gerarRelatorio(){
+  if(!completo()){ alert("Responda os 18 itens antes de gerar o relatório."); return; }
+  const m = meta();
+  const capTot = media(CAP.map(it=>resp.cap[it.c]));
+  const efTot = media(EF.map(it=>resp.ef[it.c]));
+  const doms = dominiosEf();
+  const cam = [1,2,3].map(n=>media(CAP.filter(i=>i.camada===n).map(i=>resp.cap[i.c])));
+  const prio = prioridades();
+  const confPerc = doms.find(d=>d.nome==="Confiança e percepção").valor;
+  const perfil = classifica(capTot, efTot);
+  const hoje = new Date().toLocaleDateString("pt-BR");
+  const dC = capTot-BENCH_CAP_TOT, dE = efTot-BENCH_EF_TOT;
+
+  /* --- inferências automáticas --- */
+  const capAv = CAP.map(it=>({...it, escore:resp.cap[it.c], gap:resp.cap[it.c]-it.bench}));
+  const fortes = capAv.filter(x=>x.escore>=5).sort((a,b)=>b.escore-a.escore);
+  const frageis = capAv.filter(x=>x.escore<4).sort((a,b)=>a.escore-b.escore);
+  const maiorAvanco = [...capAv].sort((a,b)=>b.gap-a.gap)[0];
+  const maiorDefas  = [...capAv].sort((a,b)=>a.gap-b.gap)[0];
+  const domFrageis = doms.filter(d=>d.valor<4).map(d=>({nome:d.nome, valor:d.valor}));
+  const domForte = [...doms].sort((a,b)=>b.valor-a.valor)[0];
+
+  let narrCam;
+  if(cam[0]-cam[2] >= 1)
+    narrCam = `O desnível entre a Camada I (${f1(cam[0])}) e a Camada III (${f1(cam[2])}) — ${f1(cam[0]-cam[2])} ponto(s) — sugere institucionalização formal ainda não convertida em capacidade operante, padrão recorrente entre as IFES na pesquisa nacional. Como a efetividade se associa com mais força justamente à Camada III, fechar esse desnível tende a ser o caminho de maior retorno.`;
+  else if(cam[2] >= 4)
+    narrCam = `A sustentação material e a integração decisória (Camada III) em ${f1(cam[2])} constituem um diferencial positivo: na pesquisa nacional essa é, em geral, a camada mais frágil — e a mais associada à efetividade percebida.`;
+  else
+    narrCam = `As três camadas evoluem de forma relativamente equilibrada, com a Camada III em ${f1(cam[2])}. Por ser a camada mais associada à efetividade na pesquisa nacional, ela segue merecendo prioridade nos ciclos de planejamento e orçamento.`;
+
+  let narrCap = fortes.length
+    ? `Destacam-se como consolidadas: ${listaNomes(fortes)}. `
+    : `Nenhuma capacidade atinge o patamar consolidado (≥ 5). `;
+  narrCap += frageis.length
+    ? `Encontram-se abaixo do ponto neutro e exigem atenção: ${listaNomes(frageis)}. `
+    : `Nenhuma capacidade encontra-se abaixo do ponto neutro. `;
+  if(maiorAvanco.gap>0) narrCap += `Em relação ao padrão nacional, o maior avanço relativo está em ${maiorAvanco.nome.toLowerCase()} (${dRelTxt(maiorAvanco.gap)})`;
+  if(maiorAvanco.gap>0 && maiorDefas.gap<0) narrCap += ` e a maior defasagem em ${maiorDefas.nome.toLowerCase()} (${dRelTxt(maiorDefas.gap)}).`;
+  else if(maiorAvanco.gap>0) narrCap += `.`;
+  else if(maiorDefas.gap<0) narrCap += `A maior defasagem em relação ao padrão nacional está em ${maiorDefas.nome.toLowerCase()} (${dRelTxt(maiorDefas.gap)}).`;
+
+  let narrEf = `O domínio mais bem avaliado é ${domForte.nome.toLowerCase()} (${f1(domForte.valor)}). `;
+  narrEf += domFrageis.length
+    ? `Permanecem abaixo do ponto neutro: ${domFrageis.map(d=>d.nome.toLowerCase()+" ("+f1(d.valor)+")").join("; ")} — nesses domínios os resultados do programa ainda não são percebidos pela instituição. `
+    : `Todos os domínios encontram-se no ponto neutro ou acima — os resultados do programa já são percebidos em todas as frentes avaliadas. `;
+  if(confPerc<4) narrEf += `A posição do domínio de confiança e percepção (${f1(confPerc)}) reforça a recomendação transversal de comunicação executiva de resultados.`;
+
+  function dRelTxt(d){ return fdelta(d)+" ponto(s)"; }
+
+  const outras = capAv.filter(x=>x.escore<4 && !prio.some(p=>p.c===x.c)).sort((a,b)=>a.escore-b.escore);
+
+  let h = `
+  <div class="cab">${LOGO_REL}<div class="tit">
+    <div class="k">Diagnóstico complementar ao Programa de Privacidade e Segurança da Informação</div>
+    <h1>Relatório Executivo — GACE-PPSI</h1>
+    <div class="sub">Guia de Avaliação de Capacidades e Efetividade do PPSI nas IFES · Instrumento v1.1 · 18 itens, escala 1–7, ponto neutro 4</div>
+  </div></div>
+  <div class="metabox">
+    <span><b>Instituição:</b> ${m.inst||"não informada"}</span>
+    <span><b>Tipo:</b> ${m.tipo||"—"}</span>
+    <span><b>Região:</b> ${m.regiao||"—"}</span>
+    <span><b>Multicampi:</b> ${m.multicampi||"—"}</span>
+    <span><b>Respondente (perfil):</b> ${m.perfil||"—"}</span>
+    <span><b>Data de referência:</b> ${m.dataref||"—"}</span>
+    <span><b>Emitido em:</b> ${hoje}</span>
+    <span><b>Instrumento:</b> GACE-PPSI v1.1 (18 itens)</span>
+    <span><b>Referência comparativa:</b> 58 IFES (2026)</span>
+  </div>
+
+  <h2>1. Síntese executiva</h2>
+  <div class="kpirow">
+    <div class="kpibox"><div class="kl">Capacidades institucionais</div><div class="kv">${f1(capTot)}<small> / 7</small></div>
+      <div class="kd">${rotulo(capTot)} · padrão IFES 3,64 (${fdelta(dC)})</div></div>
+    <div class="kpibox"><div class="kl">Efetividade percebida</div><div class="kv">${f1(efTot)}<small> / 7</small></div>
+      <div class="kd">${rotulo(efTot)} · padrão IFES 4,27 (${fdelta(dE)})</div></div>
+    <div class="kpibox amarela"><div class="kl">Perfil do programa</div><div class="kperf">${perfil.t}</div></div>
+  </div>
+  <p>A avaliação registra capacidades institucionais em <b>${f1(capTot)}</b> (situação ${rotulo(capTot)}; ${dC>=0?f1(Math.abs(dC))+" ponto(s) acima":f1(Math.abs(dC))+" ponto(s) abaixo"} do padrão nacional de 3,64) e efetividade percebida em <b>${f1(efTot)}</b> (${rotulo(efTot)}; padrão nacional 4,27). O perfil resultante é <b>${perfil.t.toLowerCase()}</b>: ${perfil.d}</p>
+  <p>Na leitura em camadas, a institucionalização formal alcança <b>${f1(cam[0])}</b>, a operação sociotécnica <b>${f1(cam[1])}</b> e a sustentação material e integração decisória <b>${f1(cam[2])}</b>. ${narrCam}</p>
+
+  <h2>2. Panorama visual das capacidades</h2>
+  <div class="figura">${radarSVG(CAP.map(it=>resp.cap[it.c]), CAP.map(it=>it.bench), 340)}
+    <div class="fleg">Figura 1 — Radar das oito capacidades: traço contínuo azul = sua instituição; tracejado cinza = padrão 58 IFES; anel tracejado = ponto neutro (4).</div></div>
+  <div class="figura">${barrasSVG(capAv.map(x=>({cod:x.c, label:x.nome, value:x.escore, bench:x.bench})))}
+    <div class="fleg">Figura 2 — Capacidades por escore: barra colorida = sua instituição (verde ≥ 5; âmbar 4–5; vermelho &lt; 4); traço preto = padrão IFES; tracejado central = ponto neutro.</div></div>
+
+  <h2>3. Capacidades institucionais</h2>
+  <table><tr><th>Capacidade</th><th>Escore</th><th>Padrão IFES</th><th>Δ</th><th>Situação</th></tr>
+  ${capAv.map(x=>`<tr><td>${x.c} · ${x.nome}</td><td><b>${f1(x.escore)}</b></td><td>${f1(x.bench)}</td><td>${dRel(x.gap)}</td><td>${stRel(x.escore)}</td></tr>`).join("")}</table>
+  <p>${narrCap}</p>
+
+  <h2>4. Efetividade percebida, por domínio</h2>
+  <div class="figura">${barrasSVG(doms.map(d=>({label:d.nome, value:d.valor, bench:d.bench})))}
+    <div class="fleg">Figura 3 — Domínios de efetividade percebida × padrão IFES.</div></div>
+  <table><tr><th>Domínio</th><th>Escore</th><th>Padrão IFES</th><th>Δ</th><th>Situação</th></tr>
+  ${doms.map(d=>`<tr><td>${d.nome}</td><td><b>${f1(d.valor)}</b></td><td>${f1(d.bench)}</td><td>${dRel(d.valor-d.bench)}</td><td>${stRel(d.valor)}</td></tr>`).join("")}</table>
+  <p>${narrEf}</p>
+
+  <h2>5. Leitura em camadas</h2>
+  <div class="figura">${barrasSVG([1,2,3].map(n=>({cod:["I","II","III"][n-1], label:CAMNOME[n], value:cam[n-1], bench:CAMBENCH[n]})))}
+    <div class="fleg">Figura 4 — Camadas de capacidade × padrão IFES. Camada I: governança · Camada II: pessoas, processos, tecnologia, treinamento · Camada III: dados, riscos, recursos.</div></div>
+  <p>${narrCam} Na pesquisa nacional, a efetividade percebida associou-se com mais força às capacidades da Camada III — tipicamente as mais frágeis nas IFES.</p>
+
+  <h2>6. Prioridades e recomendações</h2>
+  <p>Ordenação pela combinação entre a fragilidade do escore e a força da associação de cada capacidade com a efetividade observada na pesquisa nacional (correlações de Spearman). São associações, não relações causais. O desdobramento em linhas de ação, indicadores e referenciais traduz as linhas de ação da dissertação e referenciais públicos consolidados; cabe ao comitê calibrá-lo à realidade institucional.</p>
+  ${prio.map((p,i)=>{const r=REC2[p.c];return `<div class="recq"><div class="rt">Prioridade ${i+1} — ${p.nome} (${p.c})</div>
+    <div class="rm">Escore ${f1(p.escore)} · associação com a efetividade (ρ): ${String(p.rho).replace(".",",")} · Camada ${["I","II","III"][p.camada-1]} · padrão IFES ${f1(p.bench)}</div>
+    <p class="evid">${r.evid}</p>
+    <p>${RECOM[p.c]}</p>
+    <div class="rgrid"><div><div class="dtit">Linhas de ação</div><ul>${r.acoes.map(a=>`<li>${a}</li>`).join("")}</ul></div>
+    <div><div class="dtit">Indicadores de acompanhamento sugeridos</div><ul>${r.ind.map(a=>`<li>${a}</li>`).join("")}</ul>
+    <div class="dtit">Atores a envolver</div><div class="rrefs">${r.atores}</div></div></div>
+    <div class="rrefs"><b>Referenciais de apoio:</b> ${r.refs}</div></div>`;}).join("")}
+  ${confPerc<4?`<div class="recq trans"><div class="rt">Recomendação transversal — comunicação executiva</div>
+    <div class="rm">Domínio de confiança e percepção em ${f1(confPerc)}</div><p>${REC_E10}</p>
+    <div class="rgrid"><div><div class="dtit">Linhas de ação</div><ul>${TRANS2.acoes.map(a=>`<li>${a}</li>`).join("")}</ul></div>
+    <div><div class="dtit">Indicadores de acompanhamento sugeridos</div><ul>${TRANS2.ind.map(a=>`<li>${a}</li>`).join("")}</ul>
+    <div class="dtit">Atores a envolver</div><div class="rrefs">${TRANS2.atores}</div></div></div></div>`:""}
+  ${outras.length?`<h3>Demais capacidades em atenção</h3><ul class="lista">
+    ${outras.map(x=>`<li><b>${x.c} · ${x.nome} (${f1(x.escore)}; padrão IFES ${f1(x.bench)}):</b> ${RECOM[x.c]} <i>Indicadores sugeridos: ${REC2[x.c].ind.join("; ")}.</i></li>`).join("")}</ul>`:""}
+
+  <h2>7. Plano de ação sugerido</h2>
+  <table><tr><th style="width:26%">Frente prioritária</th><th style="width:37%">Primeiros movimentos (0–6 meses)</th><th style="width:37%">Consolidação (6–18 meses)</th></tr>
+  ${prio.map(p=>`<tr><td><b>${p.c} · ${p.nome}</b></td><td>${PLANO[p.c].qw}</td><td>${PLANO[p.c].est}</td></tr>`).join("")}</table>
+  <p>Horizontes indicativos, a calibrar no comitê de governança conforme o ciclo de planejamento e orçamento da instituição. Recomenda-se reaplicar o GACE-PPSI anualmente e comparar as avaliações pela importação do arquivo JSON.</p>`;
+
+  if(anterior){
+    const capAnt = media(CAP.map(it=>anterior.cap[it.c]||0));
+    const efAnt = media(EF.map(it=>anterior.ef[it.c]||0));
+    h += `<h2>8. Evolução em relação à avaliação anterior (${anterior.meta?.dataref||"data não informada"})</h2>
+    <table><tr><th>Indicador</th><th>Anterior</th><th>Atual</th><th>Variação</th></tr>
+    <tr><td>Capacidades institucionais</td><td>${f1(capAnt)}</td><td>${f1(capTot)}</td><td>${dRel(capTot-capAnt)}</td></tr>
+    <tr><td>Efetividade percebida</td><td>${f1(efAnt)}</td><td>${f1(efTot)}</td><td>${dRel(efTot-efAnt)}</td></tr></table>`;
+  }
+
+  h += `<h2>${anterior?"9":"8"}. Nota metodológica</h2>
+  <p>Diagnóstico perceptual, complementar aos índices de maturidade do PPSI e às auditorias técnicas. Instrumento derivado de revisão sistemática de 82 estudos internacionais, validado em conteúdo por painel de especialistas (CVR de Lawshe) e aplicado a 58 IFES (52,7% do universo de 110), cujas médias formam o padrão de referência exibido. As prioridades ordenam-se por associações empíricas (correlações de Spearman), que não expressam causalidade. Recomenda-se discutir o diagnóstico em comitê antes de formalizá-lo. Fonte: TESTA, F. H. <i>Avaliação da Efetividade do PPSI nas IFES</i>. Dissertação (Mestrado Profissional em Administração Pública) — UFFS, Chapecó, 2026.</p>
+  <div class="assinatura"><span class="linha-ass">Responsável institucional pelo PPSI</span></div>
+  <div class="rodape-rel"><span>GACE-PPSI v1.1 · relatório gerado em ${hoje}</span><span>Processamento 100% local — nenhum dado foi transmitido</span></div>`;
+
+  document.getElementById("relatorio").innerHTML = h;
+  window.print();
+}
+
+/* ===== Persistência local, exportação e importação ===== */
+function pacote(){ return {app:"GACE-PPSI", versao:VERSAO_APP, meta:meta(), cap:resp.cap, ef:resp.ef}; }
+function salvarRascunho(silencioso){
+  try{ localStorage.setItem("gaceppsi", JSON.stringify(pacote())); if(!silencioso) alert("Rascunho salvo neste navegador."); }catch(e){}
+}
+function restaurar(){
+  try{
+    const s = localStorage.getItem("gaceppsi"); if(!s) return;
+    const d = JSON.parse(s);
+    resp = {cap:d.cap||{}, ef:d.ef||{}};
+    Object.entries(d.meta||{}).forEach(([k,v])=>{ const el=document.getElementById(k); if(el && v) el.value=v; });
+    ["cap","ef"].forEach(bloco=>Object.entries(resp[bloco]).forEach(([c,v])=>{
+      const cont=document.getElementById("lk_"+c); if(cont) cont.querySelectorAll("button").forEach((b,i)=>b.classList.toggle("sel", i===v-1));
+    }));
+  }catch(e){}
+}
+function limparTudo(){
+  if(confirm("Apagar respostas e identificação salvas neste navegador?")){ localStorage.removeItem("gaceppsi"); location.reload(); }
+}
+function exportarJSON(){
+  const blob = new Blob([JSON.stringify(pacote(),null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "GACE-PPSI_"+(val("inst")||"instituicao").replace(/\s+/g,"_")+"_"+(val("dataref")||new Date().toISOString().slice(0,10))+".json";
+  a.click();
+}
+function importarJSON(ev){
+  const f = ev.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{ try{
+      const d = JSON.parse(r.result);
+      if(d.app!=="GACE-PPSI") throw 0;
+      anterior = d;
+      alert("Avaliação anterior importada ("+(d.meta?.dataref||"sem data")+"). Ao concluir a nova avaliação, a evolução será exibida no diagnóstico e no relatório.");
+    }catch(e){ alert("Arquivo inválido."); } };
+  r.readAsText(f);
+}
+
+/* ===== Inicialização ===== */
+montarNav(); montarItens(); restaurar(); atualizaContadores(); irPara(0);
+</script>
+</html>
