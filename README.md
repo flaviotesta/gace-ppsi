@@ -1,5 +1,7 @@
 # GACE-PPSI
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21433369.svg)](https://doi.org/10.5281/zenodo.21433369)
+
 **Guia de Avaliação de Capacidades e Efetividade do Programa de Privacidade e Segurança da Informação (PPSI) nas IFES**
 
 Aplicativo de diagnóstico institucional para Instituições Federais de Ensino Superior. Mede as **capacidades institucionais** que sustentam o PPSI e a **efetividade percebida** dos seus resultados — aquilo que os índices de maturidade não medem — e gera um relatório executivo com gráficos, prioridades baseadas em evidência e plano de ação, pronto para apresentação à alta administração.

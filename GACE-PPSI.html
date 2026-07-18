@@ -307,7 +307,7 @@
     <div class="aviso-at" id="avisoAtualizacao" role="status"></div>
     <div class="hero">
       <div>
-        <div class="kicker">Produto técnico-tecnológico · versão 1.1 · 2026</div>
+        <div class="kicker">Produto técnico-tecnológico · versão 1.1.1 · 2026</div>
         <h2>Avalie as <span class="grifo">capacidades</span> e a <span class="grifo">efetividade</span> do PPSI na sua instituição</h2>
         <p class="lead">Diagnóstico estruturado em 18 itens, comparado ao padrão nacional de 58 IFES, com relatório executivo pronto para a alta administração.</p>
         <span class="selo-local"><span class="pontoverde"></span>Execução 100% local — nenhum dado sai deste computador</span>
@@ -570,7 +570,7 @@
       <p><b>Priorização.</b> Para cada capacidade, prioridade = (7 − escore) × associação empírica com a efetividade total observada na pesquisa (correlações de Spearman): gestão de riscos 0,612; tecnologia 0,586; recursos 0,553; processos 0,479; pessoas 0,432; treinamento 0,339; gestão de dados 0,298; governança 0,292. As três maiores recebem recomendações vinculadas às linhas de ação da dissertação, desdobradas em linhas de ação, indicadores de acompanhamento, referenciais públicos de apoio (framework PPSI/SGD, PNSI — Decreto nº 12.572/2025 —, LGPD e orientações da ANPD, IN Conjunta MP/CGU nº 1/2016, CIS Controls/NIST CSF, normas ISO) e atores a envolver — um cardápio a calibrar pelo comitê, não uma prescrição. Se o domínio de confiança e percepção ficar abaixo do neutro, a comunicação executiva de resultados é sempre sugerida.</p>
       <p><b>Limites.</b> Instrumento perceptual, de respondente único qualificado; evidência associativa e transversal; padrão de referência datado da aplicação nacional (2026) e sujeito a recalibração. Complementa — não substitui — auditorias técnicas e métricas objetivas.</p>
       <p><b>Distribuição e atualizações.</b> O aplicativo é distribuído exclusivamente por download, como arquivo único, e não possui versão hospedada: todo o processamento ocorre no computador de quem o utiliza. A verificação de novas versões é manual (botão na tela inicial), consulta apenas um arquivo público com o número da versão e não transmite nenhum dado da avaliação; a atualização é sempre uma escolha do usuário, e a integridade de cada versão pode ser conferida pelo hash publicado na página de distribuição.</p>
-<p><b>Licença e citação.</b> Uso e adaptação livres, com atribuição — licença Creative Commons CC BY 4.0. Citar: TESTA, F. H. GACE-PPSI: Guia de Avaliação de Capacidades e Efetividade do PPSI nas IFES, versão 1.1. Produto técnico-tecnológico (Mestrado Profissional em Administração Pública) — Universidade Federal da Fronteira Sul, Chapecó, 2026. A identidade visual e as ilustrações são originais do produto, cobertas pela mesma licença.</p>
+<p><b>Licença e citação.</b> Uso e adaptação livres, com atribuição — licença Creative Commons CC BY 4.0. Citar: TESTA, F. H. GACE-PPSI: Guia de Avaliação de Capacidades e Efetividade do PPSI nas IFES, versão 1.1.1. Produto técnico-tecnológico (Mestrado Profissional em Administração Pública) — Universidade Federal da Fronteira Sul, Chapecó, 2026. DOI: 10.5281/zenodo.21433369. A identidade visual e as ilustrações são originais do produto, cobertas pela mesma licença.</p>
       <div class="acoes"><button class="bt" onclick="irPara(0)">Voltar ao início</button></div>
     </div>
   </section>
@@ -585,7 +585,7 @@
         <rect x="21" y="33.5" width="22" height="7.5" rx="3.75" fill="#1351B4"/>
         <rect x="25" y="46" width="14" height="7.5" rx="3.75" fill="#FFCD07"/>
       </svg>
-      <div class="fn"><b>GACE-PPSI · v1.1</b><span>Produto técnico-tecnológico</span></div>
+      <div class="fn"><b>GACE-PPSI · v1.1.1</b><span>Produto técnico-tecnológico</span></div>
     </div>
     <div>Flavio Humberto Testa · Orientação: Prof.ª Dr.ª Débora Regina Schneider Locatelli<br><b>UFFS · PROFIAP · 2026</b> — uso e adaptação livres, com atribuição · CC BY 4.0</div>
   </div>
@@ -732,7 +732,7 @@ let resp = {cap:{}, ef:{}};
 let anterior = null;
 
 /* ===== Versão e atualizações (verificação manual; nenhum dado é enviado) ===== */
-const VERSAO_APP = "1.1";
+const VERSAO_APP = "1.1.1";
 const ATUALIZACAO = {
   manifesto: "https://raw.githubusercontent.com/flaviotesta/gace-ppsi/main/versao.json",
   pagina: "https://github.com/flaviotesta/gace-ppsi/releases/latest"
@@ -749,6 +749,7 @@ function cmpVersao(a, b){
 async function verificarAtualizacao(){
   const alvo = document.getElementById("avisoAtualizacao");
   alvo.style.display = "block";
+  if(alvo.scrollIntoView) alvo.scrollIntoView({behavior:"smooth", block:"center"});
   if(ATUALIZACAO.manifesto.includes("SEU-" + "USUARIO")){
     alvo.className = "aviso-at";
     alvo.innerHTML = `A verificação de atualizações ainda não foi configurada nesta cópia. <button class="linkbt" onclick="this.closest('.aviso-at').style.display='none'">Fechar</button>`;
@@ -758,6 +759,7 @@ async function verificarAtualizacao(){
   alvo.textContent = "Verificando…";
   try{
     const r = await fetch(ATUALIZACAO.manifesto, {cache:"no-store"});
+    if(!r.ok) throw 0;
     const d = await r.json();
     const link = (typeof d.download === "string" && d.download.startsWith("https://github.com/")) ? d.download : ATUALIZACAO.pagina;
     if(cmpVersao(d.versao, VERSAO_APP) > 0){
@@ -1039,7 +1041,7 @@ function gerarRelatorio(){
   <div class="cab">${LOGO_REL}<div class="tit">
     <div class="k">Diagnóstico complementar ao Programa de Privacidade e Segurança da Informação</div>
     <h1>Relatório Executivo — GACE-PPSI</h1>
-    <div class="sub">Guia de Avaliação de Capacidades e Efetividade do PPSI nas IFES · Instrumento v1.1 · 18 itens, escala 1–7, ponto neutro 4</div>
+    <div class="sub">Guia de Avaliação de Capacidades e Efetividade do PPSI nas IFES · Instrumento v${VERSAO_APP} · 18 itens, escala 1–7, ponto neutro 4</div>
   </div></div>
   <div class="metabox">
     <span><b>Instituição:</b> ${m.inst||"não informada"}</span>
@@ -1049,7 +1051,7 @@ function gerarRelatorio(){
     <span><b>Respondente (perfil):</b> ${m.perfil||"—"}</span>
     <span><b>Data de referência:</b> ${m.dataref||"—"}</span>
     <span><b>Emitido em:</b> ${hoje}</span>
-    <span><b>Instrumento:</b> GACE-PPSI v1.1 (18 itens)</span>
+    <span><b>Instrumento:</b> GACE-PPSI v${VERSAO_APP} (18 itens)</span>
     <span><b>Referência comparativa:</b> 58 IFES (2026)</span>
   </div>
 
@@ -1122,7 +1124,7 @@ function gerarRelatorio(){
   h += `<h2>${anterior?"9":"8"}. Nota metodológica</h2>
   <p>Diagnóstico perceptual, complementar aos índices de maturidade do PPSI e às auditorias técnicas. Instrumento derivado de revisão sistemática de 82 estudos internacionais, validado em conteúdo por painel de especialistas (CVR de Lawshe) e aplicado a 58 IFES (52,7% do universo de 110), cujas médias formam o padrão de referência exibido. As prioridades ordenam-se por associações empíricas (correlações de Spearman), que não expressam causalidade. Recomenda-se discutir o diagnóstico em comitê antes de formalizá-lo. Fonte: TESTA, F. H. <i>Avaliação da Efetividade do PPSI nas IFES</i>. Dissertação (Mestrado Profissional em Administração Pública) — UFFS, Chapecó, 2026.</p>
   <div class="assinatura"><span class="linha-ass">Responsável institucional pelo PPSI</span></div>
-  <div class="rodape-rel"><span>GACE-PPSI v1.1 · relatório gerado em ${hoje}</span><span>Processamento 100% local — nenhum dado foi transmitido</span></div>`;
+  <div class="rodape-rel"><span>GACE-PPSI v${VERSAO_APP} · relatório gerado em ${hoje}</span><span>Processamento 100% local — nenhum dado foi transmitido</span></div>`;
 
   document.getElementById("relatorio").innerHTML = h;
   window.print();

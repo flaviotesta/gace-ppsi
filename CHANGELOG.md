@@ -1,5 +1,11 @@
 # Histórico de versões — GACE-PPSI
 
+## v1.1.1 — julho de 2026
+
+- Correção: o resultado da verificação de atualizações agora rola automaticamente até a área visível (antes, o aviso aparecia no topo da página e podia passar despercebido).
+- Selo DOI (Zenodo) adicionado ao README; DOI incluído na folha de método do aplicativo.
+- Sem alterações no instrumento nem nos cálculos.
+
 ## v1.1 — julho de 2026
 
 - Nova identidade visual: logomarca própria (escudo em três camadas), padrão visual institucional moderno, ilustrações vetoriais originais e navegação por etapas.
