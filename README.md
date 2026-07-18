@@ -8,9 +8,9 @@ Aplicativo de diagnóstico institucional para Instituições Federais de Ensino 
 
 ## Como usar
 
-1. Baixe a versão mais recente em **[Releases](../../releases/latest)** (arquivo `.html` anexado).
+1. **[⬇ Clique aqui para baixar a versão mais recente](../../releases/latest/download/GACE-PPSI.html)** — o download começa na hora.
 2. Salve o arquivo no computador e abra com dois cliques, em qualquer navegador moderno. Não há instalação.
-3. Para conferir a autenticidade, compare o hash SHA-256 do arquivo com o publicado na release.
+3. Para conferir a autenticidade, compare o hash SHA-256 do arquivo com o publicado na página de [Releases](../../releases/latest).
 
 O aplicativo é distribuído **exclusivamente por download** — não existe versão hospedada. Para saber se há versão nova, use o botão **"Verificar atualizações"** na tela inicial do próprio aplicativo: a checagem é manual, consulta apenas o arquivo público `versao.json` deste repositório e não transmite nenhum dado; atualizar é sempre uma escolha sua.
 
