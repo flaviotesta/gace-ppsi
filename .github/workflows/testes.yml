@@ -1,1 +1,40 @@
-placeholder
+name: Testes do GACE-PPSI
+
+# Roda o teste de fumaça (.github/scripts/teste_ci.js) sempre que o aplicativo,
+# o manifesto de versão ou o próprio teste mudarem. Verifica: versão coerente,
+# autocontenção (nenhum recurso externo), instrumento íntegro (18 itens × 7)
+# e funções essenciais. Não altera nada no repositório.
+
+on:
+  push:
+    paths:
+      - "GACE-PPSI.html"
+      - "versao.json"
+      - ".github/scripts/teste_ci.js"
+  pull_request:
+    paths:
+      - "GACE-PPSI.html"
+      - "versao.json"
+      - ".github/scripts/teste_ci.js"
+  workflow_dispatch:        # botão "Run workflow" para rodar quando quiser
+
+permissions:
+  contents: read
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+
+      - name: Preparar o Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar o jsdom (somente para o teste)
+        run: npm install jsdom --no-save
+
+      - name: Executar o teste de fumaça
+        run: node .github/scripts/teste_ci.js
