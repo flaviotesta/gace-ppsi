@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src https://raw.githubusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GACE-PPSI · Avaliação de Capacidades e Efetividade do PPSI nas IFES</title>
 <meta name="description" content="Aplicativo local de diagnóstico de capacidades institucionais e efetividade percebida do PPSI. Os dados permanecem no seu computador.">
@@ -134,6 +135,7 @@
   .regua button{width:44px; height:44px; border-radius:50%; border:2px solid var(--azul-borda); background:#fff;
     font:inherit; font-size:.95rem; font-weight:700; cursor:pointer; color:var(--azul-esc); transition:all .13s; flex:none;}
   .regua button:hover{border-color:var(--azul); background:var(--azul-tint);}
+  .regua button:focus-visible{outline:3px solid var(--azul-vivo); outline-offset:2px;}
   .regua button.sel{background:var(--azul); border-color:var(--azul); color:#fff; box-shadow:0 0 0 4px var(--azul-tint); transform:scale(1.06);}
   .regua .linha{display:flex; justify-content:space-between; margin-top:7px; font-size:.66rem; letter-spacing:.05em; text-transform:uppercase; color:var(--ink2); font-weight:700;}
   @media (max-width:560px){ .regua button{width:38px; height:38px;} }
@@ -275,6 +277,7 @@
   #relatorio ul.lista li{margin-bottom:3pt; text-align:justify;}
   #relatorio .assinatura{margin-top:34pt; text-align:center; font-size:8.5pt; page-break-inside:avoid;}
   #relatorio .assinatura .linha-ass{display:inline-block; border-top:0.75pt solid #000; padding-top:3pt; min-width:280pt;}
+  #relatorio .reg-adocao{margin-top:8pt; font-size:7.5pt; color:#5a6a78; text-align:center; font-style:italic;}
   #relatorio .rodape-rel{margin-top:14pt; border-top:0.75pt solid #C9D4E8; padding-top:5pt; font-size:7pt; color:#555; display:flex; justify-content:space-between;}
 </style>
 </head>
@@ -307,7 +310,7 @@
     <div class="aviso-at" id="avisoAtualizacao" role="status"></div>
     <div class="hero">
       <div>
-        <div class="kicker">Produto técnico-tecnológico · versão 1.1.1 · 2026</div>
+        <div class="kicker">Produto técnico-tecnológico · versão 1.2.0 · 2026</div>
         <h2>Avalie as <span class="grifo">capacidades</span> e a <span class="grifo">efetividade</span> do PPSI na sua instituição</h2>
         <p class="lead">Diagnóstico estruturado em 18 itens, comparado ao padrão nacional de 58 IFES, com relatório executivo pronto para a alta administração.</p>
         <span class="selo-local"><span class="pontoverde"></span>Execução 100% local — nenhum dado sai deste computador</span>
@@ -569,8 +572,8 @@
       <p><b>Leitura em camadas.</b> Camada I, institucionalização formal: governança (C1). Camada II, operação sociotécnica: pessoas (C2), processos (C3), tecnologia (C4) e treinamento (C7). Camada III, sustentação material e integração decisória: gestão de dados (C5), riscos integrados ao planejamento (C6) e recursos (C8). Na pesquisa nacional, a efetividade percebida associou-se com mais força à camada III — justamente a mais frágil nas IFES.</p>
       <p><b>Priorização.</b> Para cada capacidade, prioridade = (7 − escore) × associação empírica com a efetividade total observada na pesquisa (correlações de Spearman): gestão de riscos 0,612; tecnologia 0,586; recursos 0,553; processos 0,479; pessoas 0,432; treinamento 0,339; gestão de dados 0,298; governança 0,292. As três maiores recebem recomendações vinculadas às linhas de ação da dissertação, desdobradas em linhas de ação, indicadores de acompanhamento, referenciais públicos de apoio (framework PPSI/SGD, PNSI — Decreto nº 12.572/2025 —, LGPD e orientações da ANPD, IN Conjunta MP/CGU nº 1/2016, CIS Controls/NIST CSF, normas ISO) e atores a envolver — um cardápio a calibrar pelo comitê, não uma prescrição. Se o domínio de confiança e percepção ficar abaixo do neutro, a comunicação executiva de resultados é sempre sugerida.</p>
       <p><b>Limites.</b> Instrumento perceptual, de respondente único qualificado; evidência associativa e transversal; padrão de referência datado da aplicação nacional (2026) e sujeito a recalibração. Complementa — não substitui — auditorias técnicas e métricas objetivas.</p>
-      <p><b>Distribuição e atualizações.</b> O aplicativo é distribuído exclusivamente por download, como arquivo único, e não possui versão hospedada: todo o processamento ocorre no computador de quem o utiliza. A verificação de novas versões é manual (botão na tela inicial), consulta apenas um arquivo público com o número da versão e não transmite nenhum dado da avaliação; a atualização é sempre uma escolha do usuário, e a integridade de cada versão pode ser conferida pelo hash publicado na página de distribuição.</p>
-<p><b>Licença e citação.</b> Uso e adaptação livres, com atribuição — licença Creative Commons CC BY 4.0. Citar: TESTA, F. H. GACE-PPSI: Guia de Avaliação de Capacidades e Efetividade do PPSI nas IFES, versão 1.1.1. Produto técnico-tecnológico (Mestrado Profissional em Administração Pública) — Universidade Federal da Fronteira Sul, Chapecó, 2026. DOI: 10.5281/zenodo.21433369. A identidade visual e as ilustrações são originais do produto, cobertas pela mesma licença.</p>
+      <p><b>Distribuição e atualizações.</b> O aplicativo é distribuído exclusivamente por download, como arquivo único, e não possui versão hospedada: todo o processamento ocorre no computador de quem o utiliza. A verificação de novas versões é manual (botão na tela inicial), consulta apenas um arquivo público com o número da versão e não transmite nenhum dado da avaliação; a atualização é sempre uma escolha do usuário, e a integridade de cada versão pode ser conferida pelo hash publicado na página de distribuição. Para sua conveniência, as respostas e a identificação são gravadas automaticamente apenas neste navegador (armazenamento local), permanecendo no computador até que você conclua ou use o botão de apagar; nada é enviado a servidores.</p>
+<p><b>Licença e citação.</b> Uso e adaptação livres, com atribuição — licença Creative Commons CC BY 4.0. Citar: TESTA, F. H. GACE-PPSI: Guia de Avaliação de Capacidades e Efetividade do PPSI nas IFES, versão 1.2.0. Produto técnico-tecnológico (Mestrado Profissional em Administração Pública) — Universidade Federal da Fronteira Sul, Chapecó, 2026. DOI: 10.5281/zenodo.21433369. A identidade visual e as ilustrações são originais do produto, cobertas pela mesma licença.</p>
       <div class="acoes"><button class="bt" onclick="irPara(0)">Voltar ao início</button></div>
     </div>
   </section>
@@ -585,7 +588,7 @@
         <rect x="21" y="33.5" width="22" height="7.5" rx="3.75" fill="#1351B4"/>
         <rect x="25" y="46" width="14" height="7.5" rx="3.75" fill="#FFCD07"/>
       </svg>
-      <div class="fn"><b>GACE-PPSI · v1.1.1</b><span>Produto técnico-tecnológico</span></div>
+      <div class="fn"><b>GACE-PPSI · v<span id="rodapeVersao"></span></b><span>Produto técnico-tecnológico</span></div>
     </div>
     <div>Flavio Humberto Testa · Orientação: Prof.ª Dr.ª Débora Regina Schneider Locatelli<br><b>UFFS · PROFIAP · 2026</b> — uso e adaptação livres, com atribuição · CC BY 4.0</div>
   </div>
@@ -732,7 +735,7 @@ let resp = {cap:{}, ef:{}};
 let anterior = null;
 
 /* ===== Versão e atualizações (verificação manual; nenhum dado é enviado) ===== */
-const VERSAO_APP = "1.1.1";
+const VERSAO_APP = "1.2.0";
 const ATUALIZACAO = {
   manifesto: "https://raw.githubusercontent.com/flaviotesta/gace-ppsi/main/versao.json",
   pagina: "https://github.com/flaviotesta/gace-ppsi/releases/latest"
@@ -794,11 +797,24 @@ function irPara(n){
 }
 
 /* ===== Render dos itens ===== */
+const ANCORA = {1:"1, discordo totalmente",4:"4, neutro",7:"7, concordo totalmente"};
 function regua(bloco, codigo){
-  let h = `<div class="regua" id="lk_${codigo}"><div class="caixas">`;
-  for(let v=1; v<=7; v++) h += `<button type="button" aria-label="${v}" onclick="marcar('${bloco}','${codigo}',${v})">${v}</button>`;
+  let h = `<div class="regua" id="lk_${codigo}"><div class="caixas" role="radiogroup" data-bloco="${bloco}" data-cod="${codigo}" aria-label="${codigo}: escala de 1 a 7" onkeydown="teclaRegua(event)">`;
+  for(let v=1; v<=7; v++) h += `<button type="button" role="radio" aria-checked="false" tabindex="${v===1?0:-1}" aria-label="${ANCORA[v]||v}" onclick="marcar('${bloco}','${codigo}',${v})">${v}</button>`;
   h += `</div><div class="linha"><span>discordo totalmente</span><span>neutro</span><span>concordo totalmente</span></div></div>`;
   return h;
+}
+function teclaRegua(ev){
+  const grupo = ev.currentTarget, btns = Array.prototype.slice.call(grupo.querySelectorAll("button"));
+  let i = btns.indexOf(document.activeElement); if(i<0) i = btns.findIndex(b=>b.getAttribute("aria-checked")==="true");
+  let n = i<0?0:i;
+  const k = ev.key;
+  if(k==="ArrowRight"||k==="ArrowDown") n = Math.min(6, (i<0?-1:i)+1);
+  else if(k==="ArrowLeft"||k==="ArrowUp") n = Math.max(0, (i<0?1:i)-1);
+  else if(k==="Home") n = 0; else if(k==="End") n = 6; else return;
+  ev.preventDefault();
+  marcar(grupo.dataset.bloco, grupo.dataset.cod, n+1);
+  btns[n].focus();
 }
 function montarItens(){
   document.getElementById("listaCap").innerHTML = CAP.map(it=>
@@ -808,7 +824,10 @@ function montarItens(){
 }
 function marcar(bloco, codigo, v){
   resp[bloco][codigo]=v;
-  document.getElementById("lk_"+codigo).querySelectorAll("button").forEach((b,i)=>b.classList.toggle("sel", i===v-1));
+  document.getElementById("lk_"+codigo).querySelectorAll("button").forEach((b,i)=>{
+    const on = (i===v-1);
+    b.classList.toggle("sel", on); b.setAttribute("aria-checked", on?"true":"false"); b.tabIndex = on?0:-1;
+  });
   atualizaContadores();
   salvarRascunho(true);
 }
@@ -967,7 +986,7 @@ function calcular(){
   if(anterior){
     const capAnt = media(CAP.map(it=>anterior.cap[it.c]||0));
     const efAnt = media(EF.map(it=>anterior.ef[it.c]||0));
-    ch = `<h3 class="secao">Evolução em relação à avaliação importada (${anterior.meta?.dataref||"data não informada"})</h3>
+    ch = `<h3 class="secao">Evolução em relação à avaliação importada (${esc(anterior.meta?.dataref||"data não informada")})</h3>
       <table class="quadro"><tr><th>Indicador</th><th>Anterior</th><th>Atual</th><th>Variação</th></tr>
       <tr><td>Capacidades</td><td>${f1(capAnt)}</td><td>${f1(capTot)}</td><td><b style="color:${capTot-capAnt>=0?"var(--verde)":"var(--verm)"}">${fdelta(capTot-capAnt)}</b></td></tr>
       <tr><td>Efetividade</td><td>${f1(efAnt)}</td><td>${f1(efTot)}</td><td><b style="color:${efTot-efAnt>=0?"var(--verde)":"var(--verm)"}">${fdelta(efTot-efAnt)}</b></td></tr></table>`;
@@ -1044,12 +1063,12 @@ function gerarRelatorio(){
     <div class="sub">Guia de Avaliação de Capacidades e Efetividade do PPSI nas IFES · Instrumento v${VERSAO_APP} · 18 itens, escala 1–7, ponto neutro 4</div>
   </div></div>
   <div class="metabox">
-    <span><b>Instituição:</b> ${m.inst||"não informada"}</span>
-    <span><b>Tipo:</b> ${m.tipo||"—"}</span>
-    <span><b>Região:</b> ${m.regiao||"—"}</span>
-    <span><b>Multicampi:</b> ${m.multicampi||"—"}</span>
-    <span><b>Respondente (perfil):</b> ${m.perfil||"—"}</span>
-    <span><b>Data de referência:</b> ${m.dataref||"—"}</span>
+    <span><b>Instituição:</b> ${m.inst?esc(m.inst):"não informada"}</span>
+    <span><b>Tipo:</b> ${m.tipo?esc(m.tipo):"—"}</span>
+    <span><b>Região:</b> ${m.regiao?esc(m.regiao):"—"}</span>
+    <span><b>Multicampi:</b> ${m.multicampi?esc(m.multicampi):"—"}</span>
+    <span><b>Respondente (perfil):</b> ${m.perfil?esc(m.perfil):"—"}</span>
+    <span><b>Data de referência:</b> ${m.dataref?esc(m.dataref):"—"}</span>
     <span><b>Emitido em:</b> ${hoje}</span>
     <span><b>Instrumento:</b> GACE-PPSI v${VERSAO_APP} (18 itens)</span>
     <span><b>Referência comparativa:</b> 58 IFES (2026)</span>
@@ -1115,7 +1134,7 @@ function gerarRelatorio(){
   if(anterior){
     const capAnt = media(CAP.map(it=>anterior.cap[it.c]||0));
     const efAnt = media(EF.map(it=>anterior.ef[it.c]||0));
-    h += `<h2>8. Evolução em relação à avaliação anterior (${anterior.meta?.dataref||"data não informada"})</h2>
+    h += `<h2>8. Evolução em relação à avaliação anterior (${esc(anterior.meta?.dataref||"data não informada")})</h2>
     <table><tr><th>Indicador</th><th>Anterior</th><th>Atual</th><th>Variação</th></tr>
     <tr><td>Capacidades institucionais</td><td>${f1(capAnt)}</td><td>${f1(capTot)}</td><td>${dRel(capTot-capAnt)}</td></tr>
     <tr><td>Efetividade percebida</td><td>${f1(efAnt)}</td><td>${f1(efTot)}</td><td>${dRel(efTot-efAnt)}</td></tr></table>`;
@@ -1124,7 +1143,7 @@ function gerarRelatorio(){
   h += `<h2>${anterior?"9":"8"}. Nota metodológica</h2>
   <p>Diagnóstico perceptual, complementar aos índices de maturidade do PPSI e às auditorias técnicas. Instrumento derivado de revisão sistemática de 82 estudos internacionais, validado em conteúdo por painel de especialistas (CVR de Lawshe) e aplicado a 58 IFES (52,7% do universo de 110), cujas médias formam o padrão de referência exibido. As prioridades ordenam-se por associações empíricas (correlações de Spearman), que não expressam causalidade. Recomenda-se discutir o diagnóstico em comitê antes de formalizá-lo. Fonte: TESTA, F. H. <i>Avaliação da Efetividade do PPSI nas IFES</i>. Dissertação (Mestrado Profissional em Administração Pública) — UFFS, Chapecó, 2026.</p>
   <div class="assinatura"><span class="linha-ass">Responsável institucional pelo PPSI</span></div>
-  <div class="rodape-rel"><span>GACE-PPSI v${VERSAO_APP} · relatório gerado em ${hoje}</span><span>Processamento 100% local — nenhum dado foi transmitido</span></div>`;
+  <div class="rodape-rel"><span>GACE-PPSI v${VERSAO_APP} · relatório gerado em ${hoje}</span><span>Processamento 100% local — nenhum dado foi transmitido</span></div>\n  <p class="reg-adocao">Sua instituição adotou o GACE-PPSI? Registre a adoção em github.com/flaviotesta/gace-ppsi (aba Issues) — o registro compõe as evidências de impacto do produto.</p>`;
 
   document.getElementById("relatorio").innerHTML = h;
   window.print();
@@ -1142,7 +1161,7 @@ function restaurar(){
     resp = {cap:d.cap||{}, ef:d.ef||{}};
     Object.entries(d.meta||{}).forEach(([k,v])=>{ const el=document.getElementById(k); if(el && v) el.value=v; });
     ["cap","ef"].forEach(bloco=>Object.entries(resp[bloco]).forEach(([c,v])=>{
-      const cont=document.getElementById("lk_"+c); if(cont) cont.querySelectorAll("button").forEach((b,i)=>b.classList.toggle("sel", i===v-1));
+      const cont=document.getElementById("lk_"+c); if(cont) cont.querySelectorAll("button").forEach((b,i)=>{ const on=(i===v-1); b.classList.toggle("sel", on); b.setAttribute("aria-checked", on?"true":"false"); b.tabIndex = on?0:-1; });
     }));
   }catch(e){}
 }
@@ -1156,19 +1175,36 @@ function exportarJSON(){
   a.download = "GACE-PPSI_"+(val("inst")||"instituicao").replace(/\s+/g,"_")+"_"+(val("dataref")||new Date().toISOString().slice(0,10))+".json";
   a.click();
 }
+function validarPacote(d){
+  // Aceita apenas a estrutura conhecida; coage números à escala 1–7 e limpa textos.
+  if(!d || typeof d!=="object" || d.app!=="GACE-PPSI") throw new Error("assinatura ausente");
+  const num = v=>{ const n=Number(v); return (Number.isFinite(n) && n>=1 && n<=7) ? Math.round(n) : null; };
+  const bloco = (obj, itens)=>{ const o={}; itens.forEach(it=>{ const n=num((obj||{})[it.c]); if(n!==null) o[it.c]=n; }); return o; };
+  const texto = v=> (v==null?"":String(v)).replace(/[\u0000-\u001F\u007F]/g,"").slice(0,120);
+  const cap = bloco(d.cap, CAP), ef = bloco(d.ef, EF);
+  if(!Object.keys(cap).length && !Object.keys(ef).length) throw new Error("sem respostas válidas");
+  const m = d.meta||{};
+  return {app:"GACE-PPSI", versao:texto(d.versao),
+          meta:{inst:texto(m.inst), tipo:texto(m.tipo), regiao:texto(m.regiao),
+                multicampi:texto(m.multicampi), perfil:texto(m.perfil), dataref:texto(m.dataref)},
+          cap, ef};
+}
 function importarJSON(ev){
   const f = ev.target.files[0]; if(!f) return;
   const r = new FileReader();
-  r.onload = ()=>{ try{
-      const d = JSON.parse(r.result);
-      if(d.app!=="GACE-PPSI") throw 0;
-      anterior = d;
-      alert("Avaliação anterior importada ("+(d.meta?.dataref||"sem data")+"). Ao concluir a nova avaliação, a evolução será exibida no diagnóstico e no relatório.");
-    }catch(e){ alert("Arquivo inválido."); } };
+  r.onload = ()=>{
+    try{
+      anterior = validarPacote(JSON.parse(r.result));
+      alert("Avaliação anterior importada ("+(anterior.meta.dataref||"sem data")+"). Ao concluir a nova avaliação, a evolução será exibida no diagnóstico e no relatório.");
+    }catch(e){ anterior=null; alert("Arquivo inválido ou incompatível: selecione um JSON exportado pelo próprio GACE-PPSI."); }
+    finally{ ev.target.value=""; }   // permite reimportar o mesmo arquivo
+  };
   r.readAsText(f);
 }
 
 /* ===== Inicialização ===== */
-montarNav(); montarItens(); restaurar(); atualizaContadores(); irPara(0);
+montarNav(); montarItens(); restaurar(); atualizaContadores();
+var _rv=document.getElementById("rodapeVersao"); if(_rv) _rv.textContent=VERSAO_APP;
+irPara(0);
 </script>
 </html>
