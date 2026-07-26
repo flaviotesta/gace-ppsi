@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "Se você usar ou citar este software, por favor utilize os metadados abaixo."
+title: "GACE-PPSI: aplicativo de avaliação de capacidades e efetividade do PPSI nas IFES"
+type: software
+version: 1.1.1
+date-released: "2026-07-19"
+doi: 10.5281/zenodo.21433369
+license: CC-BY-4.0
+repository-code: "https://github.com/flaviotesta/gace-ppsi"
+abstract: >-
+  Software de diagnóstico complementar aos índices de maturidade do Programa de
+  Privacidade e Segurança da Informação (PPSI): avalia capacidades institucionais
+  e efetividade percebida nas Instituições Federais de Ensino Superior, com
+  comparação ao padrão nacional, priorização fundamentada em evidência e
+  relatório executivo para a alta administração. Execução 100% local, gratuito
+  e de código aberto. Produto técnico-tecnológico derivado de dissertação do
+  Mestrado Profissional em Administração Pública em Rede Nacional (PROFIAP),
+  instituição associada Universidade Federal da Fronteira Sul (UFFS).
+authors:
+  - family-names: Testa
+    given-names: Flavio Humberto
+    orcid: "https://orcid.org/0009-0004-8965-0065"
+    affiliation: "Universidade Federal da Fronteira Sul (UFFS) — PROFIAP"
+keywords:
+  - "segurança da informação"
+  - "privacidade"
+  - "PPSI"
+  - "IFES"
+  - "administração pública"
+  - "capacidades institucionais"
+  - "efetividade"
+  - "diagnóstico institucional"
