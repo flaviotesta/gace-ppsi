@@ -1,6 +1,6 @@
 # GACE-PPSI
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21433369.svg)](https://doi.org/10.5281/zenodo.21433369)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21612802.svg)](https://zenodo.org/records/21612802)
 
 **Guia de Avaliação de Capacidades e Efetividade do Programa de Privacidade e Segurança da Informação (PPSI) nas IFES**
 
@@ -26,7 +26,7 @@ O instrumento deriva de revisão sistemática de 82 estudos internacionais sobre
 
 ## Citação
 
-> TESTA, F. H. **GACE-PPSI: Guia de Avaliação de Capacidades e Efetividade do PPSI nas IFES**, versão 1.1. Produto técnico-tecnológico (Mestrado Profissional em Administração Pública) — Universidade Federal da Fronteira Sul, Chapecó, 2026.
+> TESTA, F. H. **GACE-PPSI: Guia de Avaliação de Capacidades e Efetividade do PPSI nas IFES**, versão 1.2. Produto técnico-tecnológico (Mestrado Profissional em Administração Pública) — Universidade Federal da Fronteira Sul, Chapecó, 2026.
 
 ## Licença
 
